@@ -1,0 +1,14 @@
+# File patterns to ignore; see `git help ignore` for more information.
+# Lines that start with '#' are comments.
+__pycache__/
+.ipynb_checkpoints/
+.vscode/
+data/
+build/
+test/
+_env/
+
+.idea
+*.egg-info
+*.pyc
+*.pth
