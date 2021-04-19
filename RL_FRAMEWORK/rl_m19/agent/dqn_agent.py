@@ -1,6 +1,7 @@
 import torch
 import random
 from itertools import count
+from torch.functional import Tensor
 from .base_agent import BaseAgent
 
 
@@ -10,8 +11,7 @@ class DQNAgent(BaseAgent):
         self.memory = config.memory_fn()
         self.select_action_counter = 0
 
-    # state: torch.tensor
-    def select_action(self, state):
+    def select_action(self, state: Tensor):
         sample = random.random()
         eps = self.eps_fn(self.select_action_counter)
         self.select_action_counter += 1
