@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
 from enum import Enum
 from .base_env import BaseEnv
 from .futures.account import Account

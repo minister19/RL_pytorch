@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 
 
-class Plotter(object):
+class Plotter():
     def __init__(self):
         # set up matplotlib
         self.is_ipython = 'inline' in matplotlib.get_backend()

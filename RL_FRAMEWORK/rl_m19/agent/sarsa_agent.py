@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import random
+
 from itertools import count
 from .base_agent import BaseAgent
 

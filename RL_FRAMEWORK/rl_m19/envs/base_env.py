@@ -1,7 +1,7 @@
 import torch
 
 
-class BaseEnv(object):
+class BaseEnv():
     def __init__(self, device):
         self.device = device
 

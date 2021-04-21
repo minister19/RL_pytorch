@@ -4,10 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as nnF
 import torch.optim as optim
+
 from itertools import count
 
 
-class BaseAgent(object):
+class BaseAgent():
     def __init__(self, config):
         self.config = config
         self.eps_fn = config.EPS_fn

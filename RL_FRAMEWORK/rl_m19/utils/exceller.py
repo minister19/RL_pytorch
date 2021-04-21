@@ -2,7 +2,7 @@ import pandas as pd
 from pandas import ExcelWriter, ExcelFile
 
 
-class Exceller(object):
+class Exceller():
     def __init__(self):
         pass
 
