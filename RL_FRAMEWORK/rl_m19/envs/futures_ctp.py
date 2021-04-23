@@ -105,13 +105,13 @@ class FuturesCTP(BaseEnv):
         # 5. currently, info is None
         info = None
 
-        return self.unsqueeze_tensor(next_state), self.unsqueeze_tensor(reward), done, info
+        return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
         self.step_index = self.freq.data.ignore_len  # Ignore the first n points
         self.account.reset(self.__get_current_price())
         state = self.__get_state()
-        return self.unsqueeze_tensor(state)
+        return self._unsqueeze_tensor(state)
 
     def render(self):
         close = self.freq.data.close[self.freq.data.ignore_len:self.step_index]
@@ -139,4 +139,4 @@ class FuturesCTP(BaseEnv):
 
     def close(self):
         state = np.zeros(self.states_dim)
-        return self.unsqueeze_tensor(state)
+        return self._unsqueeze_tensor(state)
