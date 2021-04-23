@@ -53,8 +53,8 @@ class CartPole_v0(BaseEnv):
 
     def step(self, action):
         next_state, reward, done, info = self.env.step(action)
-        reward = -10*abs(next_state[2])
-        # reward = -10*abs(next_state[2]) - abs(next_state[0])
+        # reward = -10*abs(next_state[2])
+        reward = -10*abs(next_state[2]) - abs(next_state[0])
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
