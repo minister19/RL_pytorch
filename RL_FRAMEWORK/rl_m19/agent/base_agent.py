@@ -1,5 +1,6 @@
 import math
 import random
+import numpy
 import torch
 import torch.nn as nn
 import torch.nn.functional as nnF
@@ -27,8 +28,11 @@ class BaseAgent():
 
     def tensor2str(self, x):
         y = torch.squeeze(x).numpy()
-        y = map(lambda n: str(n), y)
-        string = "_".join(y)
+        if y.size <= 1:
+            string = str(y)
+        else:
+            y = map(lambda n: str(n), y)
+            string = "_".join(y)
         return string
 
     def tensor2number(self, x):
