@@ -2,13 +2,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 import torch
 
+is_ipython = 'inline' in matplotlib.get_backend()
+if is_ipython:
+    from IPython import display
+
 
 class Plotter():
     def __init__(self):
         # set up matplotlib
-        self.is_ipython = 'inline' in matplotlib.get_backend()
-        if self.is_ipython:
-            from IPython import display
         plt.ion()
 
     def plot_tensor(self, data, m=0):
@@ -22,8 +23,8 @@ class Plotter():
             mean = data.unfold(0, m, 1).mean(1).view(-1)
             means = torch.cat((torch.zeros(m - 1), mean))
             plt.plot(means.numpy())
-        plt.pause(0.001)  # pause a bit so that plots are updated
-        if self.is_ipython:
+        plt.pause(0.005)  # pause a bit so that plots are updated
+        if is_ipython:
             display.clear_output(wait=True)
             display.display(plt.gcf())
 

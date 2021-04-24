@@ -48,7 +48,7 @@ class OneDimensionMaze(BaseEnv):
     def posi_to_state(self, posi):
         if posi == self.entry:
             state = [0]
-        elif 1 <= posi < self.terminal:
+        elif 0 < posi < self.terminal:
             state = [1]
         else:
             state = [2]
