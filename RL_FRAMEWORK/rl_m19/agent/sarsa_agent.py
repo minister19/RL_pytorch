@@ -27,7 +27,7 @@ class SarsaAgent(QLearningAgent):
         q_predict = self.q_table.loc[state, action]
         if next_state != None:
             # next state is not terminal
-            q_target = reward + self.config.GAMMA * self.q_table.loc[next_state, next_action].max()
+            q_target = reward + self.config.GAMMA * self.q_table.loc[next_state, next_action]
         else:
             # next state is terminal
             q_target = reward
