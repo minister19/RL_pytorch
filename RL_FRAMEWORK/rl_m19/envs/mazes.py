@@ -1,3 +1,6 @@
+import math
+import numpy as np
+
 from .base_env import BaseEnv
 
 '''
@@ -47,14 +50,16 @@ class OneDimensionMaze(BaseEnv):
 
     def posi_to_state(self, posi):
         if posi == self.entry:
-            state = [0]
+            state = 0
         elif 0 < posi < self.terminal:
-            state = [1]
+            state = 1
         else:
-            state = [2]
-        return state
+            state = 2
+        return [state]
 
     def step(self, action: int):
+        self.steps += 1
+
         # 1. take action
         pre_posi = self.posi
         if action == 0:
@@ -69,7 +74,6 @@ class OneDimensionMaze(BaseEnv):
         reward = self.posi - pre_posi
 
         # 4. test if done
-        self.steps += 1
         if self.steps >= 100:
             done = True
         elif self.posi == self.terminal:
