@@ -35,3 +35,5 @@ agent.episodes_learn()
 config.env.render()
 config.env.close()
 config.plotter.plot_end()
+
+# study q-learning
