@@ -12,7 +12,7 @@ config.episodes = 1000
 config.BATCH_SIZE = 64
 config.GAMMA = 0.999
 # config.EPS_fn = lambda s: 0.9
-config.EPS_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 200)
+config.EPS_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 1000)
 config.LR = 0.1  # LEARNING_RATE
 config.MC = 1000  # MEMORY_CAPACITY
 config.TUF = 10  # TARGET_UPDATE_FREQUENCY
@@ -29,11 +29,9 @@ config.target_net_fn = lambda: PureLinear(config)
 config.optimizer_fn = torch.optim.RMSprop
 config.loss_fn = torch.nn.MSELoss()
 
-# agent = QLearningAgent(config)
-agent = SarsaAgent(config)
+agent = QLearningAgent(config)
+# agent = SarsaAgent(config)
 agent.episodes_learn()
 config.env.render()
 config.env.close()
 config.plotter.plot_end()
-
-# study q-learning

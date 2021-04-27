@@ -1,7 +1,9 @@
 import numpy as np
+from numpy.lib import math
 import pandas as pd
 import random
 import time
+
 
 from itertools import count
 from .base_agent import BaseAgent
@@ -13,15 +15,6 @@ class QLearningAgent(BaseAgent):
         self.actions = range(self.config.actions_dim)
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float32)
         self.select_action_counter = 0
-
-    @staticmethod
-    def _unify_reward(reward):
-        if reward > 0:
-            return 1
-        elif reward == 0:
-            return 0
-        else:
-            return -1
 
     def _check_state_exist(self, state):
         if state not in self.q_table.index:
@@ -43,7 +36,7 @@ class QLearningAgent(BaseAgent):
         sample = random.random()
         eps = self.eps_fn(self.select_action_counter)
         self.select_action_counter += 1
-        if sample < eps:
+        if sample > eps:
             # some actions may have the same value, randomly choose on in these actions
             state_action = self.q_table.loc[state, :]
             best_actions = state_action[state_action == max(state_action)].index
@@ -56,7 +49,6 @@ class QLearningAgent(BaseAgent):
         # convert tensor to string, number
         state = self.tensor2str(state.cpu())
         reward = self.tensor2number(reward.cpu())
-        reward = self._unify_reward(reward)
         next_state = self.tensor2str(next_state.cpu())
 
         # record unknown state
