@@ -18,7 +18,6 @@ class SarsaAgent(QLearningAgent):
         # convert tensor to string, number
         state = self.tensor2str(state.cpu())
         reward = self.tensor2number(reward.cpu())
-        reward = self._unify_reward(reward)
         next_state = self.tensor2str(next_state.cpu())
 
         # record unknown state

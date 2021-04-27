@@ -26,7 +26,8 @@ class BaseAgent():
     def save(self):
         raise NotImplementedError
 
-    def tensor2str(self, x):
+    @staticmethod
+    def tensor2str(x):
         y = torch.squeeze(x).numpy()
         if y.size <= 1:
             string = str(y)
@@ -35,6 +36,29 @@ class BaseAgent():
             string = "_".join(y)
         return string
 
-    def tensor2number(self, x):
+    @staticmethod
+    def tensor2number(x):
         number = torch.squeeze(x).item()
         return number
+
+    @staticmethod
+    def heavisde(number):
+        if number < 0:
+            return -1
+        elif number == 0:
+            return 0
+        elif number > 0:
+            return 1
+        else:
+            raise NotImplementedError
+
+    @staticmethod
+    def rectify(number):
+        if number < -1:
+            return -1
+        elif -1 <= number <= 1:
+            return number
+        elif number > 1:
+            return 1
+        else:
+            raise NotImplementedError
