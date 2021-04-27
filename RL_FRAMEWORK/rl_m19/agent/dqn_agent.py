@@ -84,7 +84,7 @@ class DQNAgent(BaseAgent):
             if done or t >= self.config.episode_lifespan:
                 self.config.env.render()
                 self.episode_t.append(t)
-                # self.config.plotter.plot_list_ndarray(self.episode_t)
+                self.config.plotter.plot_list_ndarray(self.episode_t)
                 break
 
     def episodes_learn(self):
