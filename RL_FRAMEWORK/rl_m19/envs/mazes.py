@@ -72,13 +72,12 @@ class OneDimensionMaze(BaseEnv):
 
         # 3. update reward basing on next state
         if next_state[0] <= 1:
-            reward = self.posi - pre_posi - 1
-            # reward = self.posi - pre_posi
+            reward = self.posi - pre_posi
             # TODO: research that tuning reward such that q table reaches convergence.
+            # phenomenon: for Q Learning, Q(state=1, action=0) === -2.0
+            # reward = self.posi - pre_posi - 1
         else:
             reward = 100
-        # 3.1 add time effect to reward
-        # reward *= (1 - np.sign(reward)*math.exp(-1. * self.steps / 100))
 
         # 4. test if done
         if self.steps >= 100:

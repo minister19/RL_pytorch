@@ -64,8 +64,10 @@ class DQNAgent(BaseAgent):
         for t in count():
             self.config.env.render()
 
-            # take action, observe
+            # choose action
             action = self.select_action(state)
+
+            # take action and observe
             next_state, reward, done, info = self.config.env.step(action.item())
 
             # store transition
@@ -78,14 +80,14 @@ class DQNAgent(BaseAgent):
                 # gradient descent
                 self.gradient_descent(q_eval, q_target)
 
-            # update state
-            state = next_state
-
             if done or t >= self.config.episode_lifespan:
                 self.config.env.render()
                 self.episode_t.append(t)
                 self.config.plotter.plot_list_ndarray(self.episode_t)
                 break
+            else:
+                # update state
+                state = next_state
 
     def episodes_learn(self):
         for i_episode in range(self.config.episodes):
