@@ -29,9 +29,15 @@ config.target_net_fn = lambda: PureLinear(config)
 config.optimizer_fn = torch.optim.RMSprop
 config.loss_fn = torch.nn.MSELoss()
 
-agent = QLearningAgent(config)
-# agent = SarsaAgent(config)
-agent.episodes_learn()
-config.env.render()
-config.env.close()
-config.plotter.plot_end()
+
+if __name__ == '__main__':
+    import sys
+    args = sys.argv[1:]
+    if len(args) > 0 and args[0] == 'sarsa':
+        agent = SarsaAgent(config)
+    else:
+        agent = QLearningAgent(config)
+    agent.episodes_learn()
+    config.env.render()
+    config.env.close()
+    config.plotter.plot_end()

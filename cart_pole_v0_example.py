@@ -11,6 +11,7 @@ config.episode_lifespan = 500
 config.episodes = 1000
 config.BATCH_SIZE = 64
 config.GAMMA = 0.999
+# config.EPS_fn = lambda s: 0.9
 config.EPS_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 1000)
 config.LR = 0.001  # LEARNING_RATE
 config.MC = 1000  # MEMORY_CAPACITY
@@ -28,8 +29,10 @@ config.target_net_fn = lambda: PureLinear(config)
 config.optimizer_fn = torch.optim.RMSprop
 config.loss_fn = torch.nn.MSELoss()
 
-agent = DQNAgent(config)
-agent.episodes_learn()
-config.env.render()
-config.env.close()
-config.plotter.plot_end()
+
+if __name__ == '__main__':
+    agent = DQNAgent(config)
+    agent.episodes_learn()
+    config.env.render()
+    config.env.close()
+    config.plotter.plot_end()
