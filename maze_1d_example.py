@@ -13,7 +13,7 @@ config.BATCH_SIZE = 64
 config.GAMMA = 0.999
 # config.EPS_fn = lambda s: 0.9
 config.EPS_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 1000)
-config.LR = 0.1  # LEARNING_RATE
+config.LR = 0.001  # LEARNING_RATE
 config.MC = 1000  # MEMORY_CAPACITY
 config.TUF = 10  # TARGET_UPDATE_FREQUENCY
 
