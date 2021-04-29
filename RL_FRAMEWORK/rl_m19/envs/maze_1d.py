@@ -42,13 +42,13 @@ class OneDimensionMaze(BaseEnv):
         self.steps = None
 
     @property
-    def entry(self): return 0
+    def entry(self): return [0]
 
     @property
-    def terminal(self): return self.maze_length - 1
+    def terminal(self): return [self.maze_length - 1]
 
     def __get_state(self):
-        return [self.posi]
+        return [self.posi]1
 
     def step(self, action: int):
         self.steps += 1
@@ -58,17 +58,17 @@ class OneDimensionMaze(BaseEnv):
 
         # 2. take action
         if action == 0:
-            if self.posi > self.entry:
+            if self.posi > self.entry[0]:
                 self.posi -= 1
         elif action == 1:
-            if self.posi < self.terminal:
+            if self.posi < self.terminal[0]:
                 self.posi += 1
 
         # 3. get next state
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        if next_state[0] == self.terminal:
+        if next_state == self.terminal:
             reward = 100
         else:
             reward = next_state[0] - state[0]
@@ -77,7 +77,7 @@ class OneDimensionMaze(BaseEnv):
             # reward = next_state[0] - state[0] - 1
 
         # 5. test if done
-        if next_state[0] == self.terminal or self.steps >= 100:
+        if next_state == self.terminal or self.steps >= 100:
             done = True
         else:
             done = False
@@ -94,7 +94,8 @@ class OneDimensionMaze(BaseEnv):
         return self._unsqueeze_tensor(state)
 
     def render(self):
-        maze = '.' * (self.posi-self.entry) + 'x' + '.' * (self.terminal-self.posi)
+        maze = '.' * self.maze_length
+        maze = maze[self.posi:self.posi+1] + 'x' + maze[self.posi+1:]
         print(f'\r{maze}', end='')
 
     def close(self):
