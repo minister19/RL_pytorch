@@ -48,7 +48,7 @@ class OneDimensionMaze(BaseEnv):
     def terminal(self): return [self.maze_length - 1]
 
     def __get_state(self):
-        return [self.posi]1
+        return [self.posi]
 
     def step(self, action: int):
         self.steps += 1

@@ -46,6 +46,9 @@ class TwoDimensionMaze(BaseEnv):
         self.steps = None
 
     @property
+    def trap(self): return [7, 7]
+
+    @property
     def terminal(self): return [self.maze_length-1, self.maze_length-1]
 
     def __get_state(self):
@@ -71,7 +74,7 @@ class TwoDimensionMaze(BaseEnv):
         next_state = self.posi_to_state(self.posi)
 
         # 4. update reward basing on next state
-        if next_state == [7, 7]:
+        if next_state == self.trap:
             reward = -10
         elif next_state == state:
             reward = -1
@@ -99,7 +102,7 @@ class TwoDimensionMaze(BaseEnv):
 
     def render(self):
         maze = '.' * self.maze_length**2
-        posi = 7*7-1
+        posi = self.trap[0]*self.trap[1]-1
         maze = maze[posi:posi+1] + 'o' + maze[posi+1:]
         posi = self.posi_x*self.posi_y-1
         maze = maze[posi:posi+1] + 'x' + maze[posi+1:]
