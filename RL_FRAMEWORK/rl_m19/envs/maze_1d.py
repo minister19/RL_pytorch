@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import numpy.random as ran
 
 from .base_env import BaseEnv
 
@@ -88,15 +89,15 @@ class OneDimensionMaze(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.posi = np.random.randint(self.maze_length)
+        self.posi = ran.randint(self.maze_length)
         self.steps = 0
         state = self.__get_state()
         return self._unsqueeze_tensor(state)
 
     def render(self):
         maze = '.' * self.maze_length
-        maze = maze[self.posi:self.posi+1] + 'x' + maze[self.posi+1:]
-        print(f'\r{maze}', end='')
+        maze = maze[0:self.posi] + 'x' + maze[self.posi+1:]
+        print(maze)
 
     def close(self):
         pass

@@ -32,7 +32,7 @@ Starting State:
     Position is assigned a uniform random value in (x, y) with x/y drops in [0..9]
 Episode Termination:
     Position = (9, 9)
-    Steps >= 100
+    Steps >= 1000
 '''
 
 
