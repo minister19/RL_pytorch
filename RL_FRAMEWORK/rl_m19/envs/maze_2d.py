@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import numpy.random as ran
 
 from .base_env import BaseEnv
 
@@ -23,7 +24,7 @@ Actions:
 Reward:
     Type: Discrete(4)
     Reward      Reason
-    -10         Moved to trap (7,7)
+    -10         Moved to trap (6,6)
     -1          Stand still
     0           Moved to non-trap
     100         Terminate
@@ -46,7 +47,7 @@ class TwoDimensionMaze(BaseEnv):
         self.steps = None
 
     @property
-    def trap(self): return [7, 7]
+    def trap(self): return [6, 6]
 
     @property
     def terminal(self): return [self.maze_length-1, self.maze_length-1]
@@ -71,20 +72,20 @@ class TwoDimensionMaze(BaseEnv):
             self.posi_y = min(self.maze_length-1, self.posi_y + 1)
 
         # 3. get next state
-        next_state = self.posi_to_state(self.posi)
+        next_state = self.__get_state()
 
         # 4. update reward basing on next state
         if next_state == self.trap:
             reward = -10
         elif next_state == state:
-            reward = -1
+            reward = -5
         elif next_state == self.terminal:
             reward = 100
         else:
-            reward = 0
+            reward = -1
 
         # 5. test if done
-        if next_state == self.terminal or self.steps >= 100:
+        if next_state == self.terminal or self.steps >= 1000:
             done = True
         else:
             done = False
@@ -95,18 +96,19 @@ class TwoDimensionMaze(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.posi = self.entry
+        self.posi_x = ran.randint(self.maze_length)
+        self.posi_y = ran.randint(self.maze_length)
         self.steps = 0
-        state = self.posi_to_state(self.posi)
+        state = self.__get_state()
         return self._unsqueeze_tensor(state)
 
     def render(self):
         maze = '.' * self.maze_length**2
-        posi = self.trap[0]*self.trap[1]-1
-        maze = maze[posi:posi+1] + 'o' + maze[posi+1:]
-        posi = self.posi_x*self.posi_y-1
-        maze = maze[posi:posi+1] + 'x' + maze[posi+1:]
-        print(f'\r{maze}', end='')
+        posi = self.trap[0]*self.maze_length + self.trap[1]
+        maze = maze[0:posi] + 'o' + maze[posi+1:]
+        posi = self.posi_x*self.maze_length + self.posi_y
+        maze = maze[0:posi] + 'x' + maze[posi+1:]
+        print(maze)
 
     def close(self):
         pass
