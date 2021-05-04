@@ -67,7 +67,7 @@ class QLearningAgent(BaseAgent):
         state = self.config.env.reset()
 
         for t in count():
-            self.config.env.render()
+            # self.config.env.render()
 
             # choose action
             action = self.select_action(state)
@@ -78,8 +78,8 @@ class QLearningAgent(BaseAgent):
             if done or t >= self.config.episode_lifespan:
                 self.config.env.render()
                 self.episode_t.append(t)
-                self.config.plotter.plot_list_ndarray(self.episode_t)
-                print(f'\r\n{self.q_table}', end='\r\n')
+                self.config.plotter.plot_list_ndarray(self.episode_t, 100)
+                # print(self.q_table)
                 break
             else:
                 # learn
