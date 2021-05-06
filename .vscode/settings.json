@@ -1,10 +1,10 @@
 {
-    "editor.formatOnSave": true,
+    "python.pythonPath": "c:\\Users\\Shawn\\Documents\\repos_github\\RL_study_pytorch\\_env\\Scripts\\python.exe",
     "python.languageServer": "Pylance",
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Args": [
         "--max-line-length",
         "120",
         "--experimental"
-    ],
+    ]
 }
