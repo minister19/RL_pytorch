@@ -7,8 +7,8 @@ from rl_m19.network import ReplayMemory, PureLinear
 from rl_m19.utils import Plotter
 
 config = Config()
-config.episode_lifespan = 1000
-config.episodes = 1000
+config.episode_lifespan = 10**3
+config.episodes = 10**3
 config.BATCH_SIZE = 64
 config.GAMMA = 0.999
 # config.EPS_fn = lambda s: 0.9

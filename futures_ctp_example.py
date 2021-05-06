@@ -1,8 +1,10 @@
-from RL_FRAMEWORK import *
-
-# TODO: 比较线性网络和卷积神经网络。因为信号的曲线可以看作是一种图形。
-# TODO: 仅当reward较大时保存memory
-# TODO: 打印曲线，验证指标
+import math
+import torch
+from rl_m19.config import Config
+from rl_m19.agent import DQNAgent, QLearningAgent, SarsaAgent
+from rl_m19.envs import FuturesCTP
+from rl_m19.network import ReplayMemory, PureLinear
+from rl_m19.utils import Plotter
 
 config = Config()
 config.episode_lifespan = 10**4
@@ -16,13 +18,8 @@ config.MC = 1000  # MEMORY_CAPACITY
 config.TUF = 10  # TARGET_UPDATE_FREQUENCY
 
 config.plotter = Plotter()
-# config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-config.device = torch.device("cpu")
-account = Account(50000, 10, 0.14, 0)
-freq = Frequency('SHFE.RB', '180s')
-freq.fetch_history(False, days=120)
-freq.load_history()
-config.env = FuturesCTP(config.device, account, freq)
+config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+config.env = FuturesCTP(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
@@ -32,15 +29,29 @@ config.target_net_fn = lambda: PureLinear(config)
 config.optimizer_fn = torch.optim.RMSprop
 config.loss_fn = torch.nn.MSELoss()
 
-agent = DQNAgent(config)
-# agent = SarsaAgent(config)
-agent.episodes_learn()
-config.env.render()
-config.env.close()
-config.plotter.plot_end()
 
-# SHFE.RB 螺纹钢，1手10吨，保证金比例14%, 价格最小变动单位1
+if __name__ == '__main__':
+    import sys
+    args = sys.argv[1:]
+    if len(args) > 0:
+        if args[0] == 'dqn':
+            agent = DQNAgent(config)
+        elif args[0] == 'sarsa':
+            agent = SarsaAgent(config)
+    else:
+        agent = QLearningAgent(config)
+    agent.episodes_learn()
+    config.env.render()
+    config.env.close()
+    config.plotter.plot_end()
 
+# TODO: 比较线性网络和卷积神经网络。因为信号的曲线可以看作是一种图形。
+# TODO: 仅当reward较大时保存memory
+# TODO: 打印reward曲线，验证指标
+
+'''
+SHFE.RB 螺纹钢，1手10吨，保证金比例14%, 价格最小变动单位1
+'''
 '''
 CFFEX.IC    中证500期货主力连续合约   
 CFFEX.IF    沪深300期货主力连续合约   
