@@ -32,3 +32,4 @@
 2021-05-02 Shawn: ask for leave. Travelling to Tangyin.
 2021-05-03 Shawn: ask for leave. Travelling to Tangyin.
 2021-05-13 Shawn: ask for leave. Play SC2.
+2021-05-13 Shawn: ask for leave. Xiaoyun visits.
