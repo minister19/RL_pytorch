@@ -22,21 +22,27 @@ Observation:
     7       Boll sig                        -4/-3/-2/0/2/3/4
     8       Period sig                      -2/-1/0/1/2
     9       RSI sig                         -2/-1/0/1/2
+    开仓以后价差百分比化（止损）也应作为状态观察
 Actions:
     Type: Discrete(6)
     Num   Action
     0     Open long 0.5
     1     Open long 1.0
-    2     Close long
-    3     Open short 0.5
-    4     Open short 1.0
+    2     Open short 0.5
+    3     Open short 1.0
+    4     Close long
     5     Close short
+    6     Reverse short to long 0.5
+    7     Reverse short to long 1.0
+    7     Reverse long to short 0.5
+    8     Reverse long to short 1.0
+    9     Standby
 Reward:
     Type: Discrete(3)
     Reward      Reason
     0           abs(Margin) <= 1.0
-    -inf        Margin < 1.0
-    inf         Margin > 1.0
+    Margin      Margin < 1.0
+    Margin      Margin > 1.0
 Starting State:
     Fund = 10K
     Steps >= 100 (ignore EMA, SMA's beginning values)
