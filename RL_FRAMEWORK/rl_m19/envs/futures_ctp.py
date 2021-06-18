@@ -22,7 +22,8 @@ Observation:
     7       Boll sig                        -4/-3/-2/0/2/3/4
     8       Period sig                      -2/-1/0/1/2
     9       RSI sig                         -2/-1/0/1/2
-    开仓以后价差百分比化（止损）也应作为状态观察
+    在下单以后，观察盈亏，作为observation
+    在下单以后，观察盈亏速率，作为observation
 Actions:
     Type: Discrete(6)
     Num   Action
@@ -61,12 +62,6 @@ class FuturesCTP(BaseEnv):
         self.states_dim = self.maze_length**2
         self.actions_dim = 4  # move left/right/up/down
         self.steps = None
-
-    @property
-    def trap(self): return [6, 6]
-
-    @property
-    def terminal(self): return [self.maze_length-1, self.maze_length-1]
 
     def __get_state(self):
         return [self.posi_x, self.posi_y]

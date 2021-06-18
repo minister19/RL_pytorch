@@ -33,13 +33,10 @@ config.loss_fn = torch.nn.MSELoss()
 if __name__ == '__main__':
     import sys
     args = sys.argv[1:]
-    if len(args) > 0:
-        if args[0] == 'dqn':
-            agent = DQNAgent(config)
-        elif args[0] == 'sarsa':
-            agent = SarsaAgent(config)
+    if len(args) > 0 and args[0] == 'sarsa':
+        agent = SarsaAgent(config)
     else:
-        agent = QLearningAgent(config)
+        agent = DQNAgent(config)
     agent.episodes_learn()
     config.env.render()
     config.env.close()
