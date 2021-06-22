@@ -4,9 +4,10 @@ from .indicators import Indicators
 
 class History:
     def __init__(self) -> None:
-        wsclient = None
-        indic_15min = Indicators('indic_15min')
-        indic_60min = Indicators('indic_60min')
+        self.wsclient = None
+        self.indic_15min = Indicators('indic_15min')
+        self.indic_60min = Indicators('indic_60min')
+        self.get_data()
 
     def get_data(self):
         # connect

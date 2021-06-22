@@ -3,41 +3,38 @@ import numpy as np
 import numpy.random as ran
 
 from ..base_env import BaseEnv
+from .account import Account
 
 '''
 Description:
-    Future CTP is a trading account for trader to open/close short/long positions.
+    Futures CTP is a trading account for trader to open/close short/long positions.
 Source:
     Shuang Gao
 Observation - Indicators:
-    Type: Box(7)
-    Num     Obersvation     Min     Max     Discrete
-    0       Emas                            -1/0/1
-    1       Mas                             -1/0/1
-    2       Qianlon lon                     -1/0/1
-    3       Qianlon vel                     -1/0/1
-    4       Boll sig                        -4/-3/-2/0/2/3/4
-    5       Period sig                      -2/-1/0/1/2
-    6       RSI sig                         -2/-1/0/1/2
+    Type: Box
+    Num     Obersvation     Min     Max     Discrete            Sum
+    0       Emas trend                      -1/0/1              3
+    1       Emas support                    0/1                 2
+    2       Qianlon lon                     -1/0/1              3
+    3       Qianlon vel                     -1/0/1              3
+    4       Boll sig                        -4/-3/-2/0/2/3/4    7
+    5       Period sig                      -2/-1/0/1/2         5
+    6       RSI sig                         -2/-1/0/1/2         5
 Observation - Account:
-    Type: Box(4)
-    Num     Obersvation     Min     Max     Discrete
-    0       Fund            -inf    inf
-    1       Position                        -1.0/-0.5/0/0.5/1.0
-    2       Margin (%)                      -9/-7/-5/-3/-1/0/1/3/5/7/9
-    3       Margin_vel (%)                  -5/-3/-2/-1/-0.5/0/0.5/1/2/3/5
+    Type: Box
+    Num     Obersvation     Min     Max     Discrete                        Sum
+    0       Fund            -inf    inf                                     
+    1       Position                        -1.0/-0.5/0/0.5/1.0             5
+    2       Margin (%)                      -9/-7/-5/-3/-1/0/1/3/5/7/9      11
+    3       Margin_vel (%)                  -5/-3/-2/-1/-0.5/0/0.5/1/2/3/5  11
 Actions:
-    Type: Discrete(9)
+    Type: Discrete
     Num     Action
-    0       Open long 0.5
-    1       Open long 1.0
-    2       Open short 0.5
-    3       Open short 1.0
-    4       Close long 0.5
-    5       Close long 1.0
-    6       Close short 0.5
-    7       Close short 1.0
-    8       Standby
+    0       Long 0.5
+    1       Long 1.0
+    2       Short 0.5
+    3       Short 1.0
+    4       Neither
 Reward:
     Consider steps and margin, reward = 1 (one step forward) + margin
 Starting State:
@@ -67,6 +64,7 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
+        # 2020-08-18 Shawn: TODO: punish frequent trade.
         if action == 0:
             self.posi_x = max(0, self.posi_x - 1)
         elif action == 1:

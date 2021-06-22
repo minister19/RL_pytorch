@@ -10,19 +10,19 @@ Description:
 Source:
     Shuang Gao
 Observation:
-    Type: Box(2)
+    Type: Box
     Num     Obersvation     Min     Max
     0       Position x      0       9
     1       Position y      0       9
 Actions:
-    Type: Discrete(4)
+    Type: Discrete
     Num   Action
     0     Move left
     1     Move right
     2     Move up
     3     Move down
 Reward:
-    Type: Discrete(4)
+    Type: Discrete
     Reward      Reason
     -10         Moved to trap (6,6)
     -1          Stand still
