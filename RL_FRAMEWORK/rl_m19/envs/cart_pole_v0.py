@@ -16,15 +16,15 @@ Source:
 Observation:
     Type: Box(4)
     Num     Observation               Min                     Max
-    0       Cart Position             -4.8                    4.8
-    1       Cart Velocity             -Inf                    Inf
-    2       Pole Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
-    3       Pole Angular Velocity     -Inf                    Inf
+    1       Cart Position             -4.8                    4.8
+    2       Cart Velocity             -Inf                    Inf
+    3       Pole Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+    4       Pole Angular Velocity     -Inf                    Inf
 Actions:
     Type: Discrete(2)
     Num   Action
-    0     Push cart to the left
-    1     Push cart to the right
+    1     Push cart to the left
+    2     Push cart to the right
     Note: The amount the velocity that is reduced or increased is not
     fixed; it depends on the angle the pole is pointing. This is because
     the center of gravity of the pole increases the amount of energy needed

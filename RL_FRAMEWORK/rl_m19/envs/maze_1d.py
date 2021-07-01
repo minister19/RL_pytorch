@@ -12,12 +12,12 @@ Source:
 Observation:
     Type: Box
     Num     Obersvation     Min     Max
-    0       Position        0       9
+    1       Position        0       9
 Actions:
     Type: Discrete
     Num   Action
-    0     Move left
-    1     Move right
+    1     Move left
+    2     Move right
 Reward:
     Type: Discrete
     Reward      Reason
@@ -73,9 +73,6 @@ class OneDimensionMaze(BaseEnv):
             reward = 100
         else:
             reward = next_state[0] - state[0]
-            # TODO: research that tuning reward such that q table reaches convergence.
-            # phenomenon: for Q Learning, Q(state=1, action=0) === -2.0
-            # reward = next_state[0] - state[0] - 1
 
         # 5. test if done
         if next_state == self.terminal or self.steps >= 100:

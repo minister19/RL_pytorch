@@ -12,15 +12,15 @@ Source:
 Observation:
     Type: Box
     Num     Obersvation     Min     Max
-    0       Position x      0       9
-    1       Position y      0       9
+    1       Position x      0       9
+    2       Position y      0       9
 Actions:
     Type: Discrete
     Num   Action
-    0     Move left
-    1     Move right
-    2     Move up
-    3     Move down
+    1     Move left
+    2     Move right
+    3     Move up
+    4     Move down
 Reward:
     Type: Discrete
     Reward      Reason
