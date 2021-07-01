@@ -42,10 +42,6 @@ if __name__ == '__main__':
     config.env.close()
     config.plotter.plot_end()
 
-# TODO: 比较线性网络和卷积神经网络。因为信号的曲线可以看作是一种图形。
-# TODO: 仅当reward较大时保存memory
-# TODO: 打印reward曲线，验证指标
-
 '''
 SHFE.RB 螺纹钢，1手10吨，保证金比例14%, 价格最小变动单位1
 '''
