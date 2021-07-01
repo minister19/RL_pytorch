@@ -14,7 +14,7 @@ setup(
     description=('A Reinforcement Learning Framework for training.'),
     license="MIT",
     keywords=['Reinforcement Learning, Cart Pole, Quant, Training Framework'],
-    url='https://github.com/minister19/RL_study_pytorch',
+    url='https://github.com/minister19/RL_pytorch',
     packages=find_packages(),
     long_description=read('README.md'),
     classifiers=[
