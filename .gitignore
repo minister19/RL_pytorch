@@ -12,3 +12,7 @@ _env/
 *.egg-info
 *.pyc
 *.pth
+
+# 
+test-output/
+code-review.csv
