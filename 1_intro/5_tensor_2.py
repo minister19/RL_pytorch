@@ -104,4 +104,14 @@ print(string)
 # %%
 a = [1, 2]
 print(a[-2])
+
+# %%
+x = torch.rand(5, 3)
+print(x)
+print(x.max(0))
+print(x.max(1))
+print(x.argmax())
+print(x.argmax(dim=0))
+print(x.argmax(dim=1))
+
 # %%
