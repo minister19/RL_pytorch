@@ -1,60 +1,55 @@
-import math
-import numpy as np
-import numpy.random as ran
-
-from ..base_env import BaseEnv
-from .account import Account
+import random
+from rl_m19.envs import BaseEnv
 
 '''
 Description:
-    Futures CTP is a trading account for trader to open/close short/long positions.
+    Two dimension maze is a square for agent to move left/right/up/down until get out (right-bottom-corner).
 Source:
     Shuang Gao
-Observation - Indicators:
+Observation:
     Type: Box
-    Num     Obersvation     Min     Max     Discrete            Sum
-    0       Emas trend                      -1/0/1              3
-    1       Emas support                    0/1                 2
-    2       Qianlon lon                     -1/0/1              3
-    3       Qianlon vel                     -1/0/1              3
-    4       Boll sig                        -4/-3/-2/0/2/3/4    7
-    5       Period sig                      -2/-1/0/1/2         5
-    6       RSI sig                         -2/-1/0/1/2         5
-Observation - Account:
-    Type: Box
-    Num     Obersvation     Min     Max     Discrete                        Sum
-    0       Fund            -inf    inf                                     
-    1       Position                        -1.0/-0.5/0/0.5/1.0             5
-    2       Margin (%)                      -9/-7/-5/-3/-1/0/1/3/5/7/9      11
-    3       Margin_vel (%)                  -5/-3/-2/-1/-0.5/0/0.5/1/2/3/5  11
+    Num     Obersvation     Min     Max
+    1       Position x      0       9
+    2       Position y      0       9
 Actions:
     Type: Discrete
-    Num     Action
-    0       Long 0.5
-    1       Long 1.0
-    2       Short 0.5
-    3       Short 1.0
-    4       Neither
+    Num   Action
+    1     Move left
+    2     Move right
+    3     Move up
+    4     Move down
 Reward:
-    Consider steps and margin, reward = 1 (one step forward) + margin
+    Type: Discrete
+    Reward      Reason
+    -10         Moved to trap (6,6)
+    -1          Stand still
+    0           Moved to non-trap
+    100         Terminate
 Starting State:
-    Fund = 10K
-    Steps >= 100 (ignore EMA, SMA's beginning values)
+    Position is assigned a uniform random value in (x, y) with x/y drops in [0..9]
 Episode Termination:
-    Fun <= 5K
-    Steps >= len(history data)
+    Position = (9, 9)
+    Steps >= 1000
 '''
 
 
-class FuturesCTP(BaseEnv):
+class TwoDimensionMaze(BaseEnv):
     def __init__(self, device) -> None:
         super().__init__(device)
-        self.states_dim = 10**2
+        self.maze_length = 10  # .....x...., x is the position
+        self.states_dim = self.maze_length**2
         self.actions_dim = 4  # move left/right/up/down
+        self.posi_x = None
+        self.posi_y = None
         self.steps = None
 
+    @property
+    def trap(self): return [6, 6]
+
+    @property
+    def terminal(self): return [self.maze_length-1, self.maze_length-1]
+
     def __get_state(self):
-        # TODO: regard qianlon lon/vel ripples ~= 0
         return [self.posi_x, self.posi_y]
 
     def step(self, action: int):
@@ -64,7 +59,6 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
-        # 2020-08-18 Shawn: TODO: punish frequent trade.
         if action == 0:
             self.posi_x = max(0, self.posi_x - 1)
         elif action == 1:
@@ -99,8 +93,8 @@ class FuturesCTP(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.posi_x = ran.randint(self.maze_length)
-        self.posi_y = ran.randint(self.maze_length)
+        self.posi_x = random.randint(0, self.maze_length-1)
+        self.posi_y = random.randint(0, self.maze_length-1)
         self.steps = 0
         state = self.__get_state()
         return self._unsqueeze_tensor(state)

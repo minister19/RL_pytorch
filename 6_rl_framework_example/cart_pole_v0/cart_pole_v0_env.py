@@ -1,6 +1,5 @@
 import gym
-
-from .base_env import BaseEnv
+from rl_m19.envs import BaseEnv
 
 # https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
 

@@ -1,10 +1,10 @@
 import math
 import torch
 from rl_m19.config import Config
-from rl_m19.agent import DQNAgent, QLearningAgent, SarsaAgent
-from rl_m19.envs import FuturesCTP
+from rl_m19.agent import DQNAgent, SarsaAgent
 from rl_m19.network import ReplayMemory, PureLinear
 from rl_m19.utils import Plotter
+from futures_ctp_env import FuturesCTP
 
 config = Config()
 config.episode_lifespan = 10**4
@@ -23,10 +23,10 @@ config.env = FuturesCTP(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
-config.memory_fn = lambda: ReplayMemory(config.MC)
-config.policy_net_fn = lambda: PureLinear(config)
-config.target_net_fn = lambda: PureLinear(config)
-config.optimizer_fn = torch.optim.RMSprop
+config.memory = ReplayMemory(config.MC)
+config.policy_net = PureLinear(config)
+config.target_net = PureLinear(config)
+config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)
 config.loss_fn = torch.nn.MSELoss()
 
 

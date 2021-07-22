@@ -1,8 +1,5 @@
-import math
-import numpy as np
-import numpy.random as ran
-
-from .base_env import BaseEnv
+import random
+from rl_m19.envs import BaseEnv
 
 '''
 Description:
@@ -86,7 +83,7 @@ class OneDimensionMaze(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.posi = ran.randint(self.maze_length)
+        self.posi = random.randint(0, self.maze_length-1)
         self.steps = 0
         state = self.__get_state()
         return self._unsqueeze_tensor(state)

@@ -1,10 +1,10 @@
 import math
 import torch
 from rl_m19.config import Config
-from rl_m19.agent import DQNAgent
-from rl_m19.envs import CartPole_v0
 from rl_m19.network import ReplayMemory, PureLinear
 from rl_m19.utils import Plotter
+from cart_pole_v0_env import CartPole_v0
+from dqn_agent_ext import DQNAgentExt
 
 config = Config()
 config.episode_lifespan = 10**3
@@ -23,15 +23,15 @@ config.env = CartPole_v0(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
-config.memory_fn = lambda: ReplayMemory(config.MC)
-config.policy_net_fn = lambda: PureLinear(config)
-config.target_net_fn = lambda: PureLinear(config)
-config.optimizer_fn = torch.optim.RMSprop
+config.memory = ReplayMemory(config.MC)
+config.policy_net = PureLinear(config)
+config.target_net = PureLinear(config)
+config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)
 config.loss_fn = torch.nn.MSELoss()
 
 
 if __name__ == '__main__':
-    agent = DQNAgent(config)
+    agent = DQNAgentExt(config)
     agent.episodes_learn()
     config.env.render()
     config.env.close()
