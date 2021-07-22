@@ -1,12 +1,8 @@
 import numpy as np
-from numpy.lib import math
 import pandas as pd
 import random
-import time
-
-
 from itertools import count
-from .base_agent import BaseAgent
+from .base_agent import BaseAgent, AgentUtils
 
 
 class QLearningAgent(BaseAgent):
@@ -28,7 +24,7 @@ class QLearningAgent(BaseAgent):
 
     def select_action(self, state):
         # convert tensor to string, number
-        state = self.tensor2str(state.cpu())
+        state = AgentUtils.tensor2str(state.cpu())
 
         # record unknown state
         self._check_state_exist(state)
@@ -47,9 +43,9 @@ class QLearningAgent(BaseAgent):
 
     def learn(self, state, action, reward, next_state, next_action):
         # convert tensor to string, number
-        state = self.tensor2str(state.cpu())
-        reward = self.tensor2number(reward.cpu())
-        next_state = self.tensor2str(next_state.cpu())
+        state = AgentUtils.tensor2str(state.cpu())
+        reward = AgentUtils.tensor2number(reward.cpu())
+        next_state = AgentUtils.tensor2str(next_state.cpu())
 
         # record unknown state
         self._check_state_exist(next_state)
@@ -67,8 +63,6 @@ class QLearningAgent(BaseAgent):
         state = self.config.env.reset()
 
         for t in count():
-            # self.config.env.render()
-
             # choose action
             action = self.select_action(state)
 
@@ -76,10 +70,8 @@ class QLearningAgent(BaseAgent):
             next_state, reward, done, info = self.config.env.step(action)
 
             if done or t >= self.config.episode_lifespan:
-                self.config.env.render()
                 self.episode_t.append(t)
                 self.config.plotter.plot_list_ndarray(self.episode_t, 100)
-                # print(self.q_table)
                 break
             else:
                 # learn

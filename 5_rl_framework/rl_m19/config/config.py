@@ -15,12 +15,12 @@ class Config:
         self.states_dim = None
         self.actions_dim = None
 
-        self.memory_fn = None
-        self.policy_net_fn = None
-        self.target_net_fn = None
-        self.optimizer_fn = None
+        self.memory = None
+        self.policy_net = None
+        self.target_net = None
+        self.optimizer = None
         self.loss_fn = None
 
         if isinstance(config_dict, dict):
-            for key in config_dict.keys():
-                setattr(self, key, config_dict[key])
+            for k, v in config_dict.items():
+                setattr(self, k, v)

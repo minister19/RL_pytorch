@@ -1,31 +1,34 @@
-import math
-import random
-import numpy
 import torch
 import torch.nn as nn
 import torch.nn.functional as nnF
 import torch.optim as optim
-
-from itertools import count
 
 
 class BaseAgent():
     def __init__(self, config):
         self.config = config
         self.eps_fn = config.EPS_fn
-        self.policy_net = config.policy_net_fn()
-        self.target_net = config.target_net_fn()
+        self.policy_net = config.policy_net
+        self.target_net = config.target_net
         self.target_net.load_state_dict(self.policy_net.state_dict())
-        self.optimizer = config.optimizer_fn(self.policy_net.parameters(), self.config.LR)
+        self.optimizer = config.optimizer
         self.loss_fn = config.loss_fn
         self.episode_t = []
 
-    def load(self):
-        raise NotImplementedError
+    def select_action(self, state):
+        raise NotImplemented
 
-    def save(self):
-        raise NotImplementedError
+    def learn(self, state, action, reward, next_state, next_action):
+        raise NotImplemented
 
+    def episode_learn(self, i_episode):
+        raise NotImplemented
+
+    def episodes_learn(self):
+        raise NotImplemented
+
+
+class AgentUtils():
     @staticmethod
     def tensor2str(x):
         y = torch.squeeze(x).numpy()
@@ -47,10 +50,8 @@ class BaseAgent():
             return -1
         elif number == 0:
             return 0
-        elif number > 0:
-            return 1
         else:
-            raise NotImplementedError
+            return 1
 
     @staticmethod
     def rectify(number):
@@ -58,7 +59,5 @@ class BaseAgent():
             return -1
         elif -1 <= number <= 1:
             return number
-        elif number > 1:
-            return 1
         else:
-            raise NotImplementedError
+            return 1

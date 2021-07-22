@@ -1,18 +1,16 @@
 import torch
 import random
 from itertools import count
-from torch.functional import Tensor
-
-from .base_agent import BaseAgent
+from .base_agent import BaseAgent, AgentUtils
 
 
 class DQNAgent(BaseAgent):
     def __init__(self, config):
         super().__init__(config)
-        self.memory = config.memory_fn()
+        self.memory = config.memory
         self.select_action_counter = 0
 
-    def select_action(self, state: Tensor):
+    def select_action(self, state):
         sample = random.random()
         eps = self.eps_fn(self.select_action_counter)
         self.select_action_counter += 1
@@ -36,9 +34,9 @@ class DQNAgent(BaseAgent):
         q_eval = self.policy_net(state_batch).gather(1, action_batch)
 
         # target value
-        # 2020-08-11 Shawn: if done, next_state should be None
         mask_tuple = tuple(map(lambda s: s is not None, batch.next_state))
         non_final_mask = torch.tensor(mask_tuple, device=self.config.device, dtype=torch.bool)
+        # 2020-08-11 Shawn: if done, next_state should be None
         non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
 
         q_next = torch.zeros(self.config.BATCH_SIZE, device=self.config.device)
@@ -53,17 +51,12 @@ class DQNAgent(BaseAgent):
         loss = self.loss_fn(q_eval, q_target)  # compute loss
         self.optimizer.zero_grad()
         loss.backward()
-        # 2020-08-13 Shawn: No clamp is better for CartPole
-        # for param in self.policy_net.parameters():
-        #     param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
 
     def episode_learn(self, i_episode):
         state = self.config.env.reset()
 
         for t in count():
-            self.config.env.render()
-
             # choose action
             action = self.select_action(state)
 
@@ -81,7 +74,6 @@ class DQNAgent(BaseAgent):
                 self.gradient_descent(q_eval, q_target)
 
             if done or t >= self.config.episode_lifespan:
-                self.config.env.render()
                 self.episode_t.append(t)
                 self.config.plotter.plot_list_ndarray(self.episode_t)
                 break
