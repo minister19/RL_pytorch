@@ -15,6 +15,14 @@ class Config:
         self.states_dim = None
         self.actions_dim = None
 
+        # CNN
+        self.cnn_image_width = 0
+        self.cnn_image_height = 0
+
+        # Nematode
+        self.nematode_inputs = 0
+        self.nematode_outputs = 1
+
         self.memory = None
         self.policy_net = None
         self.target_net = None
