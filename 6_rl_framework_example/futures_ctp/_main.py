@@ -2,13 +2,13 @@ import math
 import torch
 from rl_m19.config import Config
 from rl_m19.agent import DQNAgent, SarsaAgent
-from rl_m19.network import ReplayMemory, PureLinear
+from rl_m19.network import ReplayMemory, Nematode
 from rl_m19.utils import Plotter
 from futures_ctp_env import FuturesCTP
 
 config = Config()
 config.episode_lifespan = 10**4
-config.episodes = 1000
+config.episodes = 10**3
 config.BATCH_SIZE = 64
 config.GAMMA = 0.999
 config.EPS_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 1000)
@@ -23,12 +23,14 @@ config.env = FuturesCTP(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
+config.nematode_inputs = 14
+config.nematode_outputs = 5
+
 config.memory = ReplayMemory(config.MC)
-config.policy_net = PureLinear(config)
-config.target_net = PureLinear(config)
+config.policy_net = Nematode(config)
+config.target_net = Nematode(config)
 config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)
 config.loss_fn = torch.nn.MSELoss()
-
 
 if __name__ == '__main__':
     import sys

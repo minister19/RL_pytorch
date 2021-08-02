@@ -7,7 +7,7 @@ Description:
     Futures CTP is a trading account for trader to open/close short/long positions.
 Source:
     Shuang Gao
-Observation - Indicators:
+Observation - Indicators for input:
     Type: Box
     Num     Obersvation     Min     Max     Discrete            Sum
     1       Emas sign                       -1/0/1              3
@@ -52,15 +52,14 @@ Episode Termination:
     Steps >= len(history data)
 '''
 
-# 每个信号发生以后，还应持续观察从此以后的价差，用于判断之前的信号是否合理
-
 
 class FuturesCTP(BaseEnv):
     def __init__(self, device) -> None:
         super().__init__(device)
-        self.states_dim = 10**2
-        self.actions_dim = 4  # move left/right/up/down
+        self.states_dim = 4
+        self.actions_dim = 5
         self.steps = None
+        self.rewards = []
 
     def __get_state(self):
         return [self.posi_x, self.posi_y]
@@ -72,11 +71,6 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
-        # 2020-08-18 Shawn: TODO: punish frequent trade.
-        # TODO: regard qianlon lon/vel ripples ~= 0
-        # TODO: 仅当reward较大时保存memory
-        # TODO: 打印reward曲线，验证指标
-
         if action == 0:
             self.posi_x = max(0, self.posi_x - 1)
         elif action == 1:
@@ -98,6 +92,7 @@ class FuturesCTP(BaseEnv):
             reward = 100
         else:
             reward = -1
+        self.rewards.append(reward)
 
         # 5. test if done
         if next_state == self.terminal or self.steps >= 1000:
