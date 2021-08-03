@@ -7,7 +7,7 @@ Description:
     Futures CTP is a trading account for trader to open/close short/long positions.
 Source:
     Shuang Gao
-Observation - Indicators for input:
+Observation - Indicators:
     Type: Box
     Num     Obersvation     Min     Max     Discrete            Sum
     1       Emas sign                       -1/0/1              3
@@ -30,7 +30,6 @@ Observation - Account:
     0       Fund            -inf    inf                                     
     1       Position                        -1.0/-0.5/0/0.5/1.0             5
     2       Margin (%)                      -2/-1/0/1/2                     5
-    3       Margin_vel (%)                  -2/-1/0/1/2                     5
 Actions:
     Type: Discrete
     Num     Action
@@ -40,26 +39,26 @@ Actions:
     3       Short 1.0
     4       Neither
 Reward:
-    Consider steps and margin, reward = 1 (if margin >=0, one step forward) + margin
+    Consider steps and margin, reward = 1 + margin, 1 for if margin >=0, one step forward)
 Starting State:
     Indicators = history[100] (skip EMA, SMA's beginning values)
     Fund = 10K (ignored because of continuity)
     Position = 0
     Margin = 0
-    Margin_vel = 0
 Episode Termination:
-    Fun <= 5K
-    Steps >= len(history data)
+    Indicators = history[-1]
+    Fund <= 5K
 '''
 
 
 class FuturesCTP(BaseEnv):
     def __init__(self, device) -> None:
         super().__init__(device)
-        self.states_dim = 4
+        self.states_dim = 15  # Assume Fund, Margin are independent of model.
         self.actions_dim = 5
         self.steps = None
         self.rewards = []
+        self.account = Account()
 
     def __get_state(self):
         return [self.posi_x, self.posi_y]

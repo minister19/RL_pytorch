@@ -23,9 +23,6 @@ config.env = FuturesCTP(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
-config.nematode_inputs = 14
-config.nematode_outputs = 5
-
 config.memory = ReplayMemory(config.MC)
 config.policy_net = Nematode(config)
 config.target_net = Nematode(config)

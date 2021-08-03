@@ -27,6 +27,7 @@ This repo records Shuang Gao's AI learning progress.
 - Sig-feedback is independent of sig
 - Sig's feedback is reset on each new sig, regardless of sign
 - Margin is recorded on each new action
+- Assume Fund, Margin are independent of model, thus not inputs to network
 
 ### Futures_ctp TODO
 

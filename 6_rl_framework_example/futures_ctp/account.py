@@ -1,12 +1,22 @@
-from .action import ActionTable
-from .history import History
+class Action:
+    def __init__(self, posi: str, vol: float) -> None:
+        self.posi = posi
+        self.vol = vol
+
+
+ActionTable = {
+    0: Action('L', 0.5),
+    1: Action('L', 1.0),
+    2: Action('S', 0.5),
+    3: Action('S', 1.0),
+    4: Action('N', 0),
+}
 
 
 class Account:
     def __init__(self, init_fund):
         self.init_fund = init_fund
         self.fund_total = init_fund
-        self.history = History()
         self.price = None
         self.posi = 'N'
         # vol is modeled as percentage rather than real vol
@@ -32,29 +42,15 @@ class Account:
     @property
     def nominal_margin(self):
         margin = self.margins[-1]
-        if margin < -0.02:
+        if margin < -0.05:
             return -2
-        elif -0.02 <= margin < -0.01:
+        elif -0.05 <= margin < -0.02:
             return -1
-        elif -0.01 <= margin <= 0.01:
+        elif -0.02 <= margin <= 0.02:
             return 0
-        elif 0.01 < margin <= 0.02:
+        elif 0.02 < margin <= 0.05:
             return 1
-        else:  # margin > 0.02
-            return 2
-
-    @property
-    def nominal_margin_vel(self):
-        margin_vel = self.margin_vels[-1]
-        if margin_vel < -0.01:
-            return -2
-        elif -0.01 <= margin_vel < -0.005:
-            return -1
-        elif -0.005 <= margin_vel <= 0.005:
-            return 0
-        elif 0.005 < margin_vel <= 0.01:
-            return 1
-        else:  # margin_vel > 0.01
+        else:  # margin > 0.05
             return 2
 
     def reset(self):
@@ -65,7 +61,6 @@ class Account:
         self.cost_average = None
         self.actions = []
         self.margins = []
-        self.margin_vels = []
 
     def take_action(self, action: int):
         act = ActionTable[action]
@@ -92,12 +87,7 @@ class Account:
             margin = (self.cost_average - self.price) / self.cost_average * self.vol
         else:
             margin = 0
-        if len(self.margins) <= 1:
-            margin_vel = 0
-        else:
-            margin_vel = margin - self.margins[-1]
         self.margins.append(margin)
-        self.margin_vels.append(margin_vel)
 
         self.fund_total += margin
 

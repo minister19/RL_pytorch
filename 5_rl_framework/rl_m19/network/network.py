@@ -63,9 +63,9 @@ class CNN(BaseNetwork):
 class Nematode(BaseNetwork):
     def __init__(self, config: Config):
         super().__init__('Nematode')
-        self.hidden = config.nematode_inputs // 2
-        self.fc1 = nn.Linear(config.nematode_inputs, self.hidden)
-        self.fc2 = nn.Linear(self.hidden, config.nematode_outputs)
+        self.hidden = config.states_dim // 2
+        self.fc1 = nn.Linear(config.states_dim, self.hidden)
+        self.fc2 = nn.Linear(self.hidden, config.actions_dim)
         self.to(config.device)
 
     def forward(self, x: Tensor):
@@ -77,6 +77,7 @@ class Nematode(BaseNetwork):
 if __name__ == '__main__':
     config = Config()
     config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    config.states_dim = None
     config.actions_dim = 5
     config.cnn_image_width = 100
     config.cnn_image_height = 100
@@ -85,10 +86,10 @@ if __name__ == '__main__':
     y = cnn(x)
     print(y)
 
-    config.nematode_inputs = 21
-    config.nematode_outputs = 1
+    config.states_dim = 21
+    config.actions_dim = 1
     nematode = Nematode(config)
-    x = torch.rand(1, config.nematode_inputs, device=config.device)
+    x = torch.rand(1, config.states_dim, device=config.device)
     y = nematode(x)
     print(y)
 
