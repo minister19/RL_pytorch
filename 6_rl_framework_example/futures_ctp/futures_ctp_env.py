@@ -1,6 +1,7 @@
 import random
 from rl_m19.envs import BaseEnv
 from account import Account
+from backtest_data import BacktestData
 
 '''
 Description:
@@ -9,27 +10,21 @@ Source:
     Shuang Gao
 Observation - Indicators:
     Type: Box
-    Num     Obersvation     Min     Max     Discrete            Sum
-    1       Emas sign                       -1/0/1              3
-    1.1     ~ feedback
-    2       Emas support                    -1/0/1              3
-    2.1     ~ feedback
-    3       Qianlon lon                     -1/0/1              3
-    3.1     ~ feedback
-    4       Qianlon vel                     -1/0/1              3
-    4.1     ~ feedback
-    5       Boll sig                        -4/-3/-2/0/2/3/4    7
-    5.1     ~ feedback
-    6       Period sig                      -2/-1/0/1/2         5
-    6.1     ~ feedback
-    7       RSI sig                         -2/-1/0/1/2         5
-    7.1     ~ feedback
+    Num     Obersvation     Min     Max     Discrete
+    1       Emas sign                       -1/0/1
+    2       Emas support                    -1/0/1
+    3       Qianlon sign                    -1/0/1
+    4       Qianlon vel                     -1/0/1
+    5       Boll sig                        -4/-3/-2/0/2/3/4
+    6       Period sig                      -2/-1/0/1/2
+    7       RSI sig                         -2/-1/0/1/2
+    8       Withdraw                        -1/0/1
 Observation - Account:
     Type: Box
-    Num     Obersvation     Min     Max     Discrete                        Sum
-    0       Fund            -inf    inf                                     
-    1       Position                        -1.0/-0.5/0/0.5/1.0             5
-    2       Margin (%)                      -2/-1/0/1/2                     5
+    Num     Obersvation     Min     Max     Discrete
+    0       Fund            -inf    inf     
+    1       Position                        -1.0/-0.5/0/0.5/1.0
+    2       Margin (%)                      -2/-1/0/1/2
 Actions:
     Type: Discrete
     Num     Action
@@ -37,7 +32,7 @@ Actions:
     1       Long 1.0
     2       Short 0.5
     3       Short 1.0
-    4       Neither
+    4       Neutral
 Reward:
     Consider steps and margin, reward = 1 + margin, 1 for if margin >=0, one step forward)
 Starting State:
@@ -54,11 +49,12 @@ Episode Termination:
 class FuturesCTP(BaseEnv):
     def __init__(self, device) -> None:
         super().__init__(device)
-        self.states_dim = 15  # Assume Fund, Margin are independent of model.
+        self.states_dim = 8*2  # 8*2 - Indicators along with feedback
         self.actions_dim = 5
         self.steps = None
         self.rewards = []
-        self.account = Account()
+        self.account = Account(10000)
+        self.backtest_data = BacktestData()
 
     def __get_state(self):
         return [self.posi_x, self.posi_y]

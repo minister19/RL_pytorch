@@ -24,7 +24,6 @@ class Account:
         self.cost_average = None
         self.actions = []
         self.margins = []
-        self.margin_vels = []
 
     @property
     def fund_fixed(self):

@@ -1,7 +1,7 @@
 import math
 import torch
 from rl_m19.config import Config
-from rl_m19.agent import DQNAgent, SarsaAgent
+from rl_m19.agent import DQNAgent
 from rl_m19.network import ReplayMemory, Nematode
 from rl_m19.utils import Plotter
 from futures_ctp_env import FuturesCTP
@@ -30,12 +30,7 @@ config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR
 config.loss_fn = torch.nn.MSELoss()
 
 if __name__ == '__main__':
-    import sys
-    args = sys.argv[1:]
-    if len(args) > 0 and args[0] == 'sarsa':
-        agent = SarsaAgent(config)
-    else:
-        agent = DQNAgent(config)
+    agent = DQNAgent(config)
     agent.episodes_learn()
     config.env.render()
     config.env.close()
