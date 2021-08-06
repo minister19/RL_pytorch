@@ -35,8 +35,12 @@ class Account:
 
     @property
     def nominal_posi(self):
-        sign = -1 if self.posi == 'S' else 1
-        return sign * self.vol
+        if self.posi == 'L':
+            return 1 * self.vol
+        elif self.posi == 'S':
+            return -1 * self.vol
+        else:
+            return 0
 
     @property
     def nominal_margin(self):

@@ -14,11 +14,12 @@ Observation - Indicators:
     1       Emas sign                       -1/0/1
     2       Emas support                    -1/0/1
     3       Qianlon sign                    -1/0/1
-    4       Qianlon vel                     -1/0/1
-    5       Boll sig                        -4/-3/-2/0/2/3/4
-    6       Period sig                      -2/-1/0/1/2
-    7       RSI sig                         -2/-1/0/1/2
-    8       Withdraw                        -1/0/1
+    4       Qianlon trend                   -1/0/1
+    5       Qianlon vel                     -1/0/1
+    6       Boll sig                        -4/-3/-2/0/2/3/4
+    7       Period sig                      -2/-1/0/1/2
+    8       RSI sig                         -2/-1/0/1/2
+    9       Withdraw                        -1/0/1
 Observation - Account:
     Type: Box
     Num     Obersvation     Min     Max     Discrete
@@ -49,7 +50,7 @@ Episode Termination:
 class FuturesCTP(BaseEnv):
     def __init__(self, device) -> None:
         super().__init__(device)
-        self.states_dim = 8*2  # 8*2 - Indicators along with feedback
+        self.states_dim = 9*2 + 2  # Indicators along with feedback, Postion and Margin
         self.actions_dim = 5
         self.steps = None
         self.rewards = []
@@ -57,6 +58,8 @@ class FuturesCTP(BaseEnv):
         self.backtest_data = BacktestData()
 
     def __get_state(self):
+        self.backtest_data.state
+
         return [self.posi_x, self.posi_y]
 
     def step(self, action: int):
