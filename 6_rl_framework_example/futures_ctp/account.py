@@ -44,6 +44,8 @@ class Account:
 
     @property
     def nominal_margin(self):
+        if len(self.margins) <= 0:
+            return 0
         margin = self.margins[-1]
         if margin < -0.05:
             return -2
@@ -56,14 +58,18 @@ class Account:
         else:  # margin > 0.05
             return 2
 
+    @property
+    def state(self):
+        return [self.fund_total, self.nominal_posi, self.nominal_margin]
+
     def reset(self):
         self.fund_total = self.init_fund
         self.price = None
         self.posi = 'N'
         self.vol = 0
         self.cost_average = None
-        self.actions = []
-        self.margins = []
+        self.actions.clear()
+        self.margins.clear()
 
     def take_action(self, action: int):
         act = ActionTable[action]
@@ -113,3 +119,7 @@ class Account:
     def plog(self):
         # plot time, action, fund
         pass
+
+
+if __name__ == '__main__':
+    pass
