@@ -90,11 +90,11 @@ class BacktestData:
 
     def reset(self):
         self.i = 0
-        self.state = [0] * (1+len(self.indicators))
+        self.state = [0] * (1+len(self.indicators)*2)
 
     def forward(self):
-        if self.i >= len(self.klines):
-            raise RuntimeError('Indicator data are exhausted.')
+        if self.terminated:
+            return
         else:
             kline = self.klines[self.i]
             self.state.clear()
@@ -124,6 +124,10 @@ class BacktestData:
                 self.rsi_sig,
                 self.withdraw
                 )
+
+    @property
+    def terminated(self):
+        return self.i >= len(self.klines)
 
 
 if __name__ == '__main__':

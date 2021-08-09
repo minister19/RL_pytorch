@@ -1,4 +1,5 @@
-import random
+import asyncio
+import copy
 from rl_m19.envs import BaseEnv
 from account import Account
 from backtest_data import BacktestData
@@ -11,11 +12,11 @@ Source:
 Observation - Indicators:
     Type: Box
     Num     Obersvation     Min     Max     Discrete
-    1       Emas sign                       -1/0/1
+    1       Emas trend                      -1/0/1
     2       Emas support                    -1/0/1
     3       Qianlon sign                    -1/0/1
     4       Qianlon trend                   -1/0/1
-    5       Qianlon vel                     -1/0/1
+    5       Qianlon vel sign                -1/0/1
     6       Boll sig                        -4/-3/-2/0/2/3/4
     7       Period sig                      -2/-1/0/1/2
     8       RSI sig                         -2/-1/0/1/2
@@ -52,15 +53,17 @@ class FuturesCTP(BaseEnv):
         super().__init__(device)
         self.states_dim = 9*2 + 2  # Indicators along with feedback, Postion and Margin
         self.actions_dim = 5
-        self.steps = None
+        self.steps = 0
         self.rewards = []
         self.account = Account(10000)
         self.backtest_data = BacktestData()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.backtest_data.sync())
 
     def __get_state(self):
-        self.backtest_data.state
-
-        return [self.posi_x, self.posi_y]
+        s1 = copy.copy(self.backtest_data.state[1:])
+        s2 = copy.copy(self.account.state[1:])
+        return s1.extend(s2)
 
     def step(self, action: int):
         self.steps += 1
@@ -69,31 +72,23 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
-        if action == 0:
-            self.posi_x = max(0, self.posi_x - 1)
-        elif action == 1:
-            self.posi_x = min(self.maze_length-1, self.posi_x + 1)
-        elif action == 2:
-            self.posi_y = max(0, self.posi_y - 1)
-        elif action == 3:
-            self.posi_y = min(self.maze_length-1, self.posi_y + 1)
+        self.account.take_action(action, state[0])
 
         # 3. get next state
+        self.backtest_data.forward()
+        self.account.update_margin(state[0])
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        if next_state == self.trap:
-            reward = -10
-        elif next_state == state:
-            reward = -5
-        elif next_state == self.terminal:
-            reward = 100
+        margin = self.account.margins[-1]
+        if margin >= 0:
+            reward = 1 + margin
         else:
-            reward = -1
+            reward = margin
         self.rewards.append(reward)
 
         # 5. test if done
-        if next_state == self.terminal or self.steps >= 1000:
+        if self.account.terminated or self.backtest_data.terminated:
             done = True
         else:
             done = False
@@ -104,19 +99,16 @@ class FuturesCTP(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.posi_x = ran.randint(self.maze_length)
-        self.posi_y = ran.randint(self.maze_length)
         self.steps = 0
+        self.account.reset()
+        self.backtest_data.reset()
         state = self.__get_state()
         return self._unsqueeze_tensor(state)
 
     def render(self):
-        maze = '.' * self.maze_length**2
-        posi = self.trap[0]*self.maze_length + self.trap[1]
-        maze = maze[0:posi] + 'o' + maze[posi+1:]
-        posi = self.posi_x*self.maze_length + self.posi_y
-        maze = maze[0:posi] + 'x' + maze[posi+1:]
-        print(maze)
+        print(self.account.actions)
+        print(self.account.margins)
+        print(self.rewards)
 
     def close(self):
         pass
