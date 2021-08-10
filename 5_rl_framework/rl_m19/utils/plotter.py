@@ -13,7 +13,7 @@ class Plotter():
         plt.ion()
 
     def plot_tensor(self, data, m=0):
-        fig2 = plt.figure(2)
+        fig1 = plt.figure(1)
         plt.clf()
         plt.title('Training...')
         plt.xlabel('Episode')
