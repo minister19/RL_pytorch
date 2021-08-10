@@ -90,7 +90,7 @@ class BacktestData:
 
     def reset(self):
         self.i = 0
-        self.state = [0] * (1+len(self.indicators)*2)
+        self.forward()
 
     def forward(self):
         if self.terminated:

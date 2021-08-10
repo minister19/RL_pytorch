@@ -104,15 +104,19 @@ class Account:
             return 0
         margin = self.margins[-1]
         if margin < -0.05:
-            return -2
+            return -3
         elif -0.05 <= margin < -0.02:
+            return -2
+        elif -0.02 <= margin < 0:
             return -1
-        elif -0.02 <= margin <= 0.02:
+        elif margin == 0:
             return 0
-        elif 0.02 < margin <= 0.05:
+        elif 0 <= margin <= 0.02:
             return 1
-        else:  # margin > 0.05
+        elif 0.02 < margin <= 0.05:
             return 2
+        else:  # margin > 0.05
+            return 3
 
     @property
     def state(self):
