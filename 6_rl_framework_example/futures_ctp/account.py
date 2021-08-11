@@ -10,6 +10,7 @@ ActionTable = {
     2: Action('S', 0.5),
     3: Action('S', 1.0),
     4: Action('N', 0),
+    5: Action('U', None),
 }
 
 
@@ -34,7 +35,9 @@ class Account:
 
     def take_action(self, action: int, price: float):
         act = ActionTable[action]
-        if act.posi == 'N':  # 全平
+        if act.posi == 'U':  # 待机
+            pass
+        elif act.posi == 'N':  # 全平
             self.__close(1.0)
         elif act.posi == self.posi:  # 增减仓
             if act.vol > self.vol:  # 增仓
@@ -128,4 +131,7 @@ class Account:
 
 
 if __name__ == '__main__':
-    pass
+    ac = Account(10000)
+    ac.take_action(0, 100)
+    ac.update_margin(101)
+    print(ac.state)
