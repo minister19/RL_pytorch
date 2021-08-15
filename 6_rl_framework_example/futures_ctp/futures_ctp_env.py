@@ -108,6 +108,7 @@ class FuturesCTP(BaseEnv):
     def render(self):
         print(self.account.actions)
         print(self.account.margins)
+        # 2020-08-18 Shawn: 打印 reward 曲线，验证指标.
         print(self.rewards)
 
     def close(self):

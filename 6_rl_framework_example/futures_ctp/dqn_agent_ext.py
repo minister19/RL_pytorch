@@ -29,7 +29,7 @@ class DQNAgentExt(DQNAgent):
             next_state, reward, done, info = self.config.env.step(action.item())
 
             # store transition
-            # 2020-08-18 Shawn: 仅当 reward 较大时保存 memory.
+            # 2020-08-18 Shawn: 仅当 reward 绝对值较大时保存 memory.
             self.memory.push(state, action, reward, next_state)
 
             if len(self.memory) >= self.config.BATCH_SIZE:
