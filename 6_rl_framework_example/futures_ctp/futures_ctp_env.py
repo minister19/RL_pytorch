@@ -55,7 +55,7 @@ class FuturesCTP(BaseEnv):
         self.actions_dim = 5
         self.steps = 0
         self.rewards = []
-        self.account = Account(10000)
+        self.account = Account()
         self.backtest_data = BacktestData()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.backtest_data.sync())
