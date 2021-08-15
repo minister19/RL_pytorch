@@ -1,9 +1,9 @@
 import math
 import torch
 from rl_m19.config import Config
-from rl_m19.agent import DQNAgent
 from rl_m19.network import ReplayMemory, Nematode
 from rl_m19.utils import Plotter
+from dqn_agent_ext import DQNAgentExt
 from futures_ctp_env import FuturesCTP
 
 config = Config()
@@ -30,7 +30,7 @@ config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR
 config.loss_fn = torch.nn.MSELoss()
 
 if __name__ == '__main__':
-    agent = DQNAgent(config)
+    agent = DQNAgentExt(config)
     agent.episodes_learn()
     config.env.render()
     config.env.close()
