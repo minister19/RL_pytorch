@@ -12,8 +12,6 @@
 
 ### Futures_ctp TODO
 
-1. 2020-08-18 Shawn: punish frequent trade.
-2. 2020-08-18 Shawn: 仅当 reward 较大时保存 memory.
-3. 2020-08-18 Shawn: 打印 reward 曲线，验证指标.
-4. Zigzag 指标做数据库标记，LSTM 模型做状态解析（利用它可以分析一段数据的特点），训练出有监督状态-决策模型。
-5. 不同周期数据，通过插值合并到统一训练集内。
+1. 2020-08-18 Shawn: design algorithm to reduce action transitions.
+2. 不同周期数据，通过插值合并到统一训练集内。
+3. Zigzag 指标做数据库标记，LSTM 模型做状态解析（利用它可以分析一段数据的特点），训练出有监督状态-决策模型。
