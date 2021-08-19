@@ -19,7 +19,8 @@ class Account:
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
-        self.cost_average = None
+        self.pre_cost = None
+        self.av_cost = None
         self.actions = []
         self.margins = []
 
@@ -27,7 +28,8 @@ class Account:
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0
-        self.cost_average = None
+        self.pre_cost = None
+        self.av_cost = None
         self.actions.clear()
         self.margins.clear()
 
@@ -50,23 +52,26 @@ class Account:
         self.actions.append(action)
 
     def update_margin(self, price: float):
-        if self.posi == 'L':
-            margin = (price - self.cost_average) / self.cost_average * self.vol
-        elif self.posi == 'S':
-            margin = (self.cost_average - price) / self.cost_average * self.vol
+        if self.pre_cost:
+            if self.posi == 'L':
+                margin = (price - self.pre_cost) / self.pre_cost * self.vol
+            elif self.posi == 'S':
+                margin = (self.pre_cost - price) / self.pre_cost * self.vol
+            else:
+                margin = 0
         else:
             margin = 0
         self.margins.append(margin)
-
         self.fund_total += margin
+        self.pre_cost = price
 
     def __open(self, posi, d_vol, price: float):
         if self.posi != 'N' and self.posi != posi:
             raise RuntimeError("Invalid posi", posi)
-        if self.cost_average:
-            self.cost_average = (self.cost_average*self.vol + price*d_vol)/(self.vol + d_vol)
+        if self.av_cost:
+            self.av_cost = (self.av_cost*self.vol + price*d_vol)/(self.vol + d_vol)
         else:
-            self.cost_average = price
+            self.av_cost = price
         self.posi = posi
         self.vol += d_vol
         return
@@ -75,6 +80,7 @@ class Account:
         if d_vol == 1.0:
             self.posi = 'N'
             self.vol = 0
+            self.av_cost = None
         else:
             self.vol -= d_vol
 
@@ -103,21 +109,7 @@ class Account:
     def nominal_margin(self):
         if len(self.margins) <= 0:
             return 0
-        margin = self.margins[-1]
-        if margin < -0.05:
-            return -3
-        elif -0.05 <= margin < -0.02:
-            return -2
-        elif -0.02 <= margin < 0:
-            return -1
-        elif margin == 0:
-            return 0
-        elif 0 <= margin <= 0.02:
-            return 1
-        elif 0.02 < margin <= 0.05:
-            return 2
-        else:  # margin > 0.05
-            return 3
+        return self.margins[-1]
 
     @property
     def state(self):
@@ -133,71 +125,16 @@ if __name__ == '__main__':
 
     from numpy import random
     x = random.randint(100, 200)
-    ac.take_action(0, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
 
-    x = random.randint(100, 200)
-    ac.take_action(5, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
+    for i in range(5):
+        ac.take_action(i, x)
+        print(f'posi: {ac.nominal_posi}, close: {x}, av_cost: {ac.av_cost}', end=' ')
+        x = random.randint(100, 200)
+        ac.update_margin(x)
+        print(f'close: {x}, fund: {round(ac.fund_total, 2)}')
 
-    x = random.randint(100, 200)
-    ac.take_action(1, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(5, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(2, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(5, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(3, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(5, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(4, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
-
-    x = random.randint(100, 200)
-    ac.take_action(5, x)
-    print(ac.nominal_posi, x, ac.cost_average, end=' ')
-    x = random.randint(100, 200)
-    ac.update_margin(x)
-    print(x, round(ac.fund_total, 2))
+        ac.take_action(5, x)
+        print(f'posi: {ac.nominal_posi}, close: {x}, av_cost: {ac.av_cost}', end=' ')
+        x = random.randint(100, 200)
+        ac.update_margin(x)
+        print(f'close: {x}, fund: {round(ac.fund_total, 2)}')

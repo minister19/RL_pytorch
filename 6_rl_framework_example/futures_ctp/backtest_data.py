@@ -14,7 +14,7 @@ class SingleIndicator:
         s = np.sign(self.value[i])
         if self.feedback_sign:
             if s == 0 or s == self.feedback_sign:
-                feedback = round((close - self.feedback_cost) / self.feedback_cost, 3)
+                feedback = round((close - self.feedback_cost) * self.feedback_sign * 100 / self.feedback_cost, 3)
             else:
                 self.feedback_sign = s
                 self.feedback_cost = new_cost
@@ -40,19 +40,23 @@ class BacktestData:
         self.period_sig = SingleIndicator()
         self.rsi_sig = SingleIndicator()
         self.withdraw = SingleIndicator()
-        self.state = [0] * (1+len(self.indicators)*2)
+        self.state = [0] * (2+len(self.indicators)*2)
 
     async def sync(self):
         '''
         Use Websocket client to sync data from huobi_futures_python server.
         '''
         async with client.connect('ws://localhost:6801') as websocket:
-            await websocket.send('kline_15min_sync')
+            await websocket.send('kline_60min_sync')
             msg1 = await websocket.recv()
             data1 = json.loads(msg1)
-            self.klines = data1['data']
+            klines = data1['data']
 
-            await websocket.send('indic_15min_sync')
+            for i in range(len(klines)):
+                klines[i]['id'] -= 8*60*60
+            self.klines = klines
+
+            await websocket.send('indic_60min_sync')
             msg2 = await websocket.recv()
             data2 = json.loads(msg2)
             ema_3 = data2['data']['emas']['ema_3']
@@ -98,6 +102,7 @@ class BacktestData:
         else:
             kline = self.klines[self.i]
             self.state.clear()
+            self.state.append(kline['id'])
             self.state.append(kline['close'])
             for indic in self.indicators:
                 val = indic.value[self.i]
@@ -107,6 +112,8 @@ class BacktestData:
                         new_cost = kline['low']
                     elif val == 1:
                         new_cost = kline['high']
+                    else:
+                        new_cost = kline['close']
                 else:
                     new_cost = kline['close']
                 self.state.append(indic.forward(self.i, kline['close'], new_cost))
@@ -131,12 +138,16 @@ class BacktestData:
 
 
 if __name__ == '__main__':
+    from datetime import datetime
     bd = BacktestData()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(bd.sync())
     for i in range(len(bd.klines)):
         bd.forward()
-        x = bd.state[1:]
+        x = bd.state[0:2]
+        print(f'{datetime.fromtimestamp(x[0], tz=None)}, {x[1]}', end='\t')
+
+        x = bd.state[2:]
         print(f'e_trend {x[0]}, {x[1]:.3f}', end='\t')
         print(f'e_support {x[2]}, {x[3]:.3f}', end='\t')
         print(f'q_sign {x[4]}, {x[5]:.3f}', end='\t')
