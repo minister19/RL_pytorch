@@ -12,8 +12,8 @@ class Plotter():
         # set up matplotlib
         plt.ion()
 
-    def plot_tensor(self, data, m=0):
-        fig1 = plt.figure(1)
+    def plot_tensor(self, id, data, m=0):
+        fig1 = plt.figure(id)
         plt.clf()
         plt.title('Training...')
         plt.xlabel('Episode')
@@ -28,9 +28,9 @@ class Plotter():
             display.clear_output(wait=True)
             display.display(plt.gcf())
 
-    def plot_list_ndarray(self, x, m=0):
+    def plot_list_ndarray(self, id, x, m=0):
         x_ = torch.tensor(x, dtype=torch.float)
-        self.plot_tensor(x_, m)
+        self.plot_tensor(id, x_, m)
 
     def plot_end(self):
         plt.ioff()

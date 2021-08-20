@@ -41,8 +41,10 @@ class DQNAgentExt(DQNAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                self.config.plotter.plot_list_ndarray(self.episode_t)
+                self.config.plotter.plot_list_ndarray('1', self.episode_t)
                 self.config.env.render()
+                print(self.config.env.account.fund_total)
+                self.config.plotter.plot_list_ndarray('2', self.config.env.account.margins)
                 break
             else:
                 # update state
