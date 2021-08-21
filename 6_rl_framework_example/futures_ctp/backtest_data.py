@@ -40,7 +40,7 @@ class BacktestData:
         self.period_sig = SingleIndicator()
         self.rsi_sig = SingleIndicator()
         self.withdraw = SingleIndicator()
-        self.state = [0] * (2+len(self.indicators)*2)
+        self.state = []
 
     async def sync(self):
         '''
@@ -102,8 +102,7 @@ class BacktestData:
         else:
             kline = self.klines[self.i]
             self.state.clear()
-            self.state.append(kline['id'])
-            self.state.append(kline['close'])
+            self.state.append(kline)
             for indic in self.indicators:
                 val = indic.value[self.i]
                 self.state.append(val)
@@ -144,10 +143,10 @@ if __name__ == '__main__':
     loop.run_until_complete(bd.sync())
     for i in range(len(bd.klines)):
         bd.forward()
-        x = bd.state[0:2]
-        print(f'{datetime.fromtimestamp(x[0], tz=None)}, {x[1]}', end='\t')
+        x = bd.state[0]
+        print(f'{datetime.fromtimestamp(x["id"], tz=None)}, {x["close"]}', end='\t')
 
-        x = bd.state[2:]
+        x = bd.state[1:]
         print(f'e_trend {x[0]}, {x[1]:.3f}', end='\t')
         print(f'e_support {x[2]}, {x[3]:.3f}', end='\t')
         print(f'q_sign {x[4]}, {x[5]:.3f}', end='\t')

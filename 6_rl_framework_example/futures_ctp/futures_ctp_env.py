@@ -64,7 +64,7 @@ class FuturesCTP(BaseEnv):
 
     def __get_state(self):
         s1 = copy.copy(self.account.state[1:])
-        s2 = copy.copy(self.backtest_data.state[2:])
+        s2 = copy.copy(self.backtest_data.state[1:])
         s3 = s1 + s2
         return s3
 
