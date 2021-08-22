@@ -20,8 +20,6 @@ class DQNAgentExt(DQNAgent):
         state = self.config.env.reset()
 
         for t in count():
-            self.config.env.render()
-
             # choose action
             action = self.select_action(state)
 
@@ -41,10 +39,15 @@ class DQNAgentExt(DQNAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                self.config.plotter.plot_list_ndarray('1', self.episode_t)
+                self.config.plotter.plot_single_with_mean({
+                    'id': 1,
+                    'title': 'episode_t',
+                    'xlabel': 'iteration',
+                    'ylabel': 'lifespan',
+                    'data': self.episode_t,
+                    'm': 100
+                })
                 self.config.env.render()
-                print(self.config.env.account.fund_total)
-                self.config.plotter.plot_list_ndarray('2', self.config.env.account.margins)
                 break
             else:
                 # update state

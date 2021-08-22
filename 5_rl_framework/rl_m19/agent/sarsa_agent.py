@@ -42,7 +42,14 @@ class SarsaAgent(QLearningAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                self.config.plotter.plot_list_ndarray(self.episode_t, 100)
+                self.config.plotter.plot_single_with_mean({
+                    'id': 1,
+                    'title': 'episode_t',
+                    'xlabel': 'iteration',
+                    'ylabel': 'lifespan',
+                    'data': self.episode_t,
+                    'm': 100
+                })
                 break
             else:
                 # learn
