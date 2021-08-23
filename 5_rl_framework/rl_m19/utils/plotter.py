@@ -11,14 +11,15 @@ class Plotter():
     def __init__(self):
         plt.ion()  # set up matplotlib
 
-    def plot_line(self, config):
+    def plot_single(self, config):
         '''
         config: {
             id: unique identifier,
             title: '',
             xlabel: '',
             ylabel: '',
-            data: []
+            x_data: [],
+            y_data: []
         }
         '''
         fig = plt.figure(config['id'])
@@ -26,15 +27,14 @@ class Plotter():
         if len(axes) == 0:
             plt.title(config['title'])
             plt.xlabel(config['xlabel'])
-            plt.ylabel(config['ylabel'])
-            plt.plot(config['data'])
+            plt.plot(config['x_data'], config['y_data'], label=config['ylabel'])
         else:
-            _data = config['data']
-            line, = axes[0].get_lines()
-            line.set_xdata(range(len(_data)))
-            line.set_ydata(_data)
-            axes[0].relim()
-            axes[0].autoscale_view(True, True, True)
+            ax = axes[0]
+            line, = ax.get_lines()
+            line.set_xdata(config['x_data'])
+            line.set_ydata(config['y_data'])
+            ax.relim()
+            ax.autoscale_view(True, True, True)
         if is_ipython:
             display.clear_output(wait=True)
             display.display(fig)
