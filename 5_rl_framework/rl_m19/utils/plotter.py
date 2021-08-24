@@ -48,34 +48,35 @@ class Plotter():
             title: '',
             xlabel: '',
             ylabel: '',
-            data: [],
+            x_data: [],
+            y_data: [],
             m: int
         }
         '''
         fig = plt.figure(config['id'])
         axes = fig.get_axes()
-        _data = config['data']
+        _data = config['y_data']
         m = config['m']
         if m > 0 and len(_data) > m:
             __data = torch.tensor(_data, dtype=torch.float)
             mean = __data.unfold(0, m, 1).mean(1).view(-1)
             means = torch.cat((torch.zeros(m - 1), mean)).numpy()
         else:
-            means = []
+            means = [None] * len(_data)
         if len(axes) == 0:
             plt.title(config['title'])
             plt.xlabel(config['xlabel'])
-            plt.ylabel(config['ylabel'])
-            plt.plot(_data)
-            plt.plot([])
+            plt.plot(config['x_data'], config['y_data'], label=config['ylabel'])
+            plt.plot(config['x_data'], means, label=config['ylabel'] + '_mean')
         else:
-            line, meanline = axes[0].get_lines()
-            line.set_xdata(range(len(_data)))
-            line.set_ydata(_data)
-            meanline.set_xdata(range(len(means)))
+            ax = axes[0]
+            line, meanline = ax.get_lines()
+            line.set_xdata(config['x_data'])
+            line.set_ydata(config['y_data'])
+            meanline.set_xdata(config['x_data'])
             meanline.set_ydata(means)
-            axes[0].relim()
-            axes[0].autoscale_view(True, True, True)
+            ax.relim()
+            ax.autoscale_view(True, True, True)
         if is_ipython:
             display.clear_output(wait=True)
             display.display(fig)
