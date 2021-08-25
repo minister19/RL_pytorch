@@ -83,17 +83,44 @@ class Plotter():
         else:
             plt.pause(0.1)  # pause a bit so that plots are updated
 
-    def plot_multiple_line(self, configs):
+    def plot_multiple(self, config):
         '''
-        configs: [{
+        configs: {
             id: unique identifier,
             title: '',
             xlabel: '',
-            ylabel: '',
-            data: []
-        }]
+            ylabels: [''],
+            x_data: [[]],
+            y_data: [[]]
+        }
         '''
-        pass
+        fig = plt.figure(config['id'])
+        axes = fig.get_axes()
+        if len(axes) == 0:
+            plt.title(config['title'])
+            plt.xlabel(config['xlabel'])
+            for i in range(len(config['ylabels'])):
+                if i == 0:
+                    plt.plot(config['x_data'][i], config['y_data'][i], label=config['ylabels'][i])
+                    axes = fig.get_axes()
+                    ax = axes[0]
+                else:
+                    twin = ax.twinx()
+                    # twin.spines.right.set_position(("axes", 1.2))
+                    twin.plot(config['x_data'][i], config['y_data'][i], label=config['ylabels'][i])
+        else:
+            for i in range(len(config['ylabels'])):
+                ax = axes[i]
+                line, = ax.get_lines()
+                line.set_xdata(config['x_data'][i])
+                line.set_ydata(config['y_data'][i])
+                ax.relim()
+                ax.autoscale_view(True, True, True)
+        if is_ipython:
+            display.clear_output(wait=True)
+            display.display(fig)
+        else:
+            plt.pause(0.1)  # pause a bit so that plots are updated
 
     def plot_end(self):
         plt.ioff()
