@@ -129,19 +129,59 @@ class Plotter():
 
 if __name__ == '__main__':
     p = Plotter()
-    line = p.plot_line({
+    line = p.plot_single({
         'id': 1,
-        'title': 'episode_t',
-        'xlabel': 'iteration',
-        'ylabel': 'lifespan',
-        'data': [1, 3, 5],
+        'title': 'single_line',
+        'xlabel': 't',
+        'ylabel': 'l1',
+        'x_data': range(4),
+        'y_data': [1, 2, 3, 4]
     })
     plt.pause(1)
-    p.plot_line({
+    p.plot_single({
         'id': 1,
-        'title': 'episode_t',
-        'xlabel': 'iteration',
-        'ylabel': 'lifespan',
-        'data': [1, 2, 3, 5, 8],
+        'title': 'single_line',
+        'xlabel': 't',
+        'ylabel': 'l1',
+        'x_data': range(5),
+        'y_data': [1, 2, 3, 5, 8],
+    })
+
+    p.plot_single_with_mean({
+        'id': 2,
+        'title': 'single_with_mean',
+        'xlabel': 't',
+        'ylabel': 'l1',
+        'x_data': range(4),
+        'y_data': [1, 2, 3, 4],
+        "m": 3
+    })
+    plt.pause(1)
+    p.plot_single_with_mean({
+        'id': 2,
+        'title': 'single_with_mean',
+        'xlabel': 't',
+        'ylabel': 'l1',
+        'x_data': range(5),
+        'y_data': [1, 2, 3, 5, 8],
+        "m": 3
+    })
+
+    p.plot_multiple({
+        'id': 3,
+        'title': 'multiple_lines',
+        'xlabel': 't',
+        'ylabels': ['l1', 'l2'],
+        'x_data': [range(4), range(5)],
+        'y_data': [[1, 2, 3, 4], [1, 2, 3, 5, 8]],
+    })
+    plt.pause(1)
+    p.plot_multiple({
+        'id': 3,
+        'title': 'multiple_lines',
+        'xlabel': 't',
+        'ylabels': ['l1', 'l2'],
+        'x_data': [range(5), range(6)],
+        'y_data': [[1, 2, 3, 4, 5], [1, 2, 3, 5, 8, 13]],
     })
     plt.show(block=True)
