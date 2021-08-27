@@ -80,7 +80,8 @@ class DQNAgent(BaseAgent):
                     'title': 'episode_t',
                     'xlabel': 'iteration',
                     'ylabel': 'lifespan',
-                    'data': self.episode_t,
+                    'x_data': range(len(self.episode_t)),
+                    'y_data': self.episode_t,
                     'm': 100
                 })
                 break
