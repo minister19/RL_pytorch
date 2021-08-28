@@ -44,8 +44,8 @@ Episode Termination:
 
 
 class CartPole_v0(BaseEnv):
-    def __init__(self, device):
-        super().__init__(device)
+    def __init__(self, device, plotter=None):
+        super().__init__(device, plotter)
         self.env = gym.make('CartPole-v0').unwrapped
         self.states_dim = 4
         self.actions_dim = 2

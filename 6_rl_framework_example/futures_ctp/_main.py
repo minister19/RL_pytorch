@@ -19,7 +19,7 @@ config.TUF = 10  # TARGET_UPDATE_FREQUENCY
 
 config.plotter = Plotter()
 config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-config.env = FuturesCTP(config.device)
+config.env = FuturesCTP(config.device, config.plotter)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 

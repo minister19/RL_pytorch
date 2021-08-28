@@ -1,9 +1,11 @@
 import torch
+from rl_m19.utils import Plotter
 
 
 class BaseEnv():
-    def __init__(self, device):
+    def __init__(self, device, plotter: Plotter):
         self.device = device
+        self.plotter = plotter
         self.states_dim = None
         self.actions_dim = None
 

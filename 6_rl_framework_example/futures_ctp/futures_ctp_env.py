@@ -51,8 +51,8 @@ Episode Termination:
 
 
 class FuturesCTP(BaseEnv):
-    def __init__(self, device) -> None:
-        super().__init__(device)
+    def __init__(self, device, plotter=None) -> None:
+        super().__init__(device, plotter)
         self.account = Account()
         self.backtest_data = BacktestData()
         loop = asyncio.get_event_loop()

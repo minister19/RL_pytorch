@@ -34,8 +34,8 @@ Episode Termination:
 
 
 class TwoDimensionMaze(BaseEnv):
-    def __init__(self, device) -> None:
-        super().__init__(device)
+    def __init__(self, device, plotter=None) -> None:
+        super().__init__(device, plotter)
         self.maze_length = 10  # .....x...., x is the position
         self.states_dim = self.maze_length**2
         self.actions_dim = 4  # move left/right/up/down
