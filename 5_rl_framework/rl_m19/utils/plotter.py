@@ -89,7 +89,7 @@ class Plotter():
             id: unique identifier,
             title: '',
             xlabel: '',
-            ylabels: [''],
+            ylabel: [''],
             x_data: [[]],
             y_data: [[]]
         }
@@ -99,17 +99,19 @@ class Plotter():
         if len(axes) == 0:
             plt.title(config['title'])
             plt.xlabel(config['xlabel'])
-            for i in range(len(config['ylabels'])):
+            for i in range(len(config['ylabel'])):
                 if i == 0:
-                    plt.plot(config['x_data'][i], config['y_data'][i], label=config['ylabels'][i])
+                    plt.plot(config['x_data'][i], config['y_data'][i], label=config['ylabel'][i])
                     axes = fig.get_axes()
                     ax = axes[0]
                 else:
                     twin = ax.twinx()
-                    # twin.spines.right.set_position(("axes", 1.2))
-                    twin.plot(config['x_data'][i], config['y_data'][i], label=config['ylabels'][i])
+                    if i >= 2:
+                        fig.subplots_adjust(right=1.0 - 0.25*(i-1))
+                        twin.spines.right.set_position(("axes", 1.0 + 0.2*(i-1)))
+                    twin.plot(config['x_data'][i], config['y_data'][i], label=config['ylabel'][i])
         else:
-            for i in range(len(config['ylabels'])):
+            for i in range(len(config['ylabel'])):
                 ax = axes[i]
                 line, = ax.get_lines()
                 line.set_xdata(config['x_data'][i])
@@ -171,7 +173,7 @@ if __name__ == '__main__':
         'id': 3,
         'title': 'multiple_lines',
         'xlabel': 't',
-        'ylabels': ['l1', 'l2'],
+        'ylabel': ['l1', 'l2'],
         'x_data': [range(4), range(5)],
         'y_data': [[1, 2, 3, 4], [1, 2, 3, 5, 8]],
     })
@@ -180,7 +182,7 @@ if __name__ == '__main__':
         'id': 3,
         'title': 'multiple_lines',
         'xlabel': 't',
-        'ylabels': ['l1', 'l2'],
+        'ylabel': ['l1', 'l2'],
         'x_data': [range(5), range(6)],
         'y_data': [[1, 2, 3, 4, 5], [1, 2, 3, 5, 8, 13]],
     })
