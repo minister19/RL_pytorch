@@ -52,6 +52,7 @@ class DQNAgent(BaseAgent):
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        return loss.item()
 
     def episode_learn(self, i_episode):
         state = self.config.env.reset()
@@ -71,7 +72,7 @@ class DQNAgent(BaseAgent):
                 q_eval, q_target = self.sample_minibatch()
 
                 # gradient descent
-                self.gradient_descent(q_eval, q_target)
+                loss = self.gradient_descent(q_eval, q_target)
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)

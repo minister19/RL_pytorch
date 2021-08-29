@@ -11,9 +11,9 @@ class DQNAgentExt(DQNAgent):
         loss = self.loss_fn(q_eval, q_target)  # compute loss
         self.optimizer.zero_grad()
         loss.backward()
-        # 2020-08-13 Shawn: While, no clamp is better for CartPole
-        for param in self.policy_net.parameters():
-            param.grad.data.clamp_(-1, 1)
+        # 2020-08-13 Shawn: While, no clamp is better sometimes.
+        # for param in self.policy_net.parameters():
+        #     param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
 
     def episode_learn(self, i_episode):
@@ -36,7 +36,7 @@ class DQNAgentExt(DQNAgent):
                 q_eval, q_target = self.sample_minibatch()
 
                 # gradient descent
-                self.gradient_descent(q_eval, q_target)
+                loss = self.gradient_descent(q_eval, q_target)
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
