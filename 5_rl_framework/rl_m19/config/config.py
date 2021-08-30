@@ -9,6 +9,7 @@ class Config:
         self.MC = 1000  # MEMORY_CAPACITY
         self.TUF = 10  # TARGET_UPDATE_FREQUENCY
 
+        self.logger = None
         self.plotter = None
         self.device = None
         self.env = None
