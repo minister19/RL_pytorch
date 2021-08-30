@@ -20,4 +20,4 @@ x = torch.randn(1, 16)
 y = model(x)
 
 dot = make_dot(y, params=dict(model.named_parameters()), show_attrs=True, show_saved=True)
-dot.render('test-output/round-table.gv', view=True)
+dot.render('data/round-table.gv', view=True)

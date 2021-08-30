@@ -9,4 +9,4 @@ dot.edges(['AB', 'AL'])
 dot.edge('B', 'L', constraint='false')
 
 # print graphic model architecture
-dot.render('test-output/round-table.gv', view=True)
+dot.render('data/round-table.gv', view=True)

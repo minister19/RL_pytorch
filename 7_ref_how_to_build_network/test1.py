@@ -22,4 +22,4 @@ output = torch.sigmoid((h2 @ W3) + B3)
 
 # print graphic model architecture
 dot = make_dot(output.mean(), params=dict(output.named_parameters()), show_attrs=True, show_saved=True)
-dot.render('test-output/round-table.gv', view=True)
+dot.render('data/round-table.gv', view=True)

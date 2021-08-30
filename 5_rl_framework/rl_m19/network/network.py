@@ -94,4 +94,4 @@ if __name__ == '__main__':
     print(y)
 
     dot = make_dot(y, params=dict(nematode.named_parameters()), show_attrs=True, show_saved=True)
-    dot.render('test-output/round-table.gv', view=True)
+    dot.render('data/round-table.gv', view=True)
