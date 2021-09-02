@@ -85,7 +85,7 @@ class Plotter():
 
     def plot_multiple(self, config):
         '''
-        configs: {
+        config: {
             id: unique identifier,
             title: '',
             xlabel: '',
@@ -118,11 +118,34 @@ class Plotter():
                 line.set_ydata(config['y_data'][i])
                 ax.relim()
                 ax.autoscale_view(True, True, True)
+
         if is_ipython:
             display.clear_output(wait=True)
             display.display(fig)
         else:
             plt.pause(0.1)  # pause a bit so that plots are updated
+        return axes
+
+    def plot_scatter(self, config):
+        '''
+        config: {
+            axes: plt.Axes,
+            x_data: [],
+            y_data: [],
+            s: int,
+            c: 'red', 'green', etc.,
+            marker: '^', 'v', 'o'
+        }
+        '''
+        # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.scatter.html
+        # https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.PathCollection
+        path_collection = config['axes'].scatter(
+            x=config['x_data'],
+            y=config['y_data'],
+            s=config['s'],
+            c=config['c'],
+            marker=config['marker'])
+        return path_collection
 
     def plot_end(self):
         plt.ioff()
