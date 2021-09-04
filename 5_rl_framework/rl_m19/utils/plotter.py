@@ -101,7 +101,10 @@ class Plotter():
             plt.xlabel(config['xlabel'])
             for i in range(len(config['ylabel'])):
                 if i == 0:
-                    plt.plot(config['x_data'][i], config['y_data'][i], label=config['ylabel'][i])
+                    plt.plot(
+                        config['x_data'][i],
+                        config['y_data'][i],
+                        label=config['ylabel'][i])
                     axes = fig.get_axes()
                     ax = axes[0]
                 else:
@@ -109,7 +112,10 @@ class Plotter():
                     if i >= 2:
                         fig.subplots_adjust(right=1.0 - 0.25*(i-1))
                         twin.spines.right.set_position(("axes", 1.0 + 0.2*(i-1)))
-                    twin.plot(config['x_data'][i], config['y_data'][i], label=config['ylabel'][i])
+                    twin.plot(
+                        config['x_data'][i],
+                        config['y_data'][i],
+                        label=config['ylabel'][i])
         else:
             for i in range(len(config['ylabel'])):
                 ax = axes[i]
@@ -132,19 +138,25 @@ class Plotter():
             axes: plt.Axes,
             x_data: [],
             y_data: [],
-            s: int,
+            s: int, e.g. 25,
             c: 'red', 'green', etc.,
             marker: '^', 'v', 'o'
         }
         '''
         # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.scatter.html
         # https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.PathCollection
+        fig = plt.figure(config['id'])
         path_collection = config['axes'].scatter(
             x=config['x_data'],
             y=config['y_data'],
             s=config['s'],
             c=config['c'],
             marker=config['marker'])
+        if is_ipython:
+            display.clear_output(wait=True)
+            display.display(fig)
+        else:
+            plt.pause(0.1)  # pause a bit so that plots are updated
         return path_collection
 
     def plot_end(self):

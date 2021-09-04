@@ -38,9 +38,9 @@ Actions:
     3       Short 1.0
     4       Neutral
 Reward:
-    Consider steps and margin, reward = 1 + margin, 1 for if margin >=0, one step forward)
+    Consider steps and margin, reward = margin + trade_fee
 Starting State:
-    Indicators = history[100] (skip EMA, SMA's beginning values)
+    Indicators = history[60] (skip EMA, SMA's beginning values, 5*6*2=60)
     Fund = 10K (ignored because of continuity)
     Position = 0
     Margin = 0
@@ -57,14 +57,16 @@ class FuturesCTP(BaseEnv):
         self.backtest_data = BacktestData()
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.backtest_data.sync())
-        self.states_dim = 2 + len(self.backtest_data.indicators)*2  # postion, margin, indicators along with feedback
-        self.actions_dim = 5
+        self.states_dim = self.account.states_dim + self.backtest_data.states_dim
+        self.actions_dim = self.account.actions_dim
         self.steps = 0
-        self.rewards = []
+        self.__action_long_pc = None
+        self.__action_short_pc = None
+        self.__action_neutral_pc = None
 
     def __get_state(self):
-        s1 = copy.copy(self.account.state[1:])
-        s2 = copy.copy(self.backtest_data.state[1:])
+        s1 = copy.copy(self.account.states[1:])
+        s2 = copy.copy(self.backtest_data.states[1:])
         s3 = s1 + s2
         return s3
 
@@ -75,20 +77,16 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
-        self.account.take_action(action, self.backtest_data.state[1])
+        self.account.take_action(action, self.backtest_data.states[0]['close'])
 
         # 3. get next state
         self.backtest_data.forward()
-        self.account.update_margin(self.backtest_data.state[1])
+        self.account.update_margin(self.backtest_data.states[0]['close'])
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        margin = self.account.margins[-1] * 100
-        if margin >= 0:
-            reward = 1 + margin
-        else:
-            reward = margin
-        self.rewards.append(reward)
+        margin = self.account.margins[-1]
+        reward = (margin + self.account.trade_fee)*100
 
         # 5. test if done
         if self.account.terminated or self.backtest_data.terminated:
@@ -102,19 +100,82 @@ class FuturesCTP(BaseEnv):
         return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
 
     def reset(self):
-        self.steps = 0
-        self.rewards.clear()
         self.account.reset()
         self.backtest_data.reset()
+        self.steps = 0
         state = self.__get_state()
         return self._unsqueeze_tensor(state)
 
     def render(self):
-        # print(self.account.actions)
-        # print(self.account.margins)
-        # 2020-08-18 Shawn: 打印 reward 曲线，验证指标.
-        # print(self.rewards)
-        pass
+        # plot klines and funds
+        partial = len(self.account.actions)
+        close = []
+        fund_totals = self.account.fund_totals[0:partial]
+        time = range(partial)
+        for i in time:
+            close.append(self.backtest_data.klines_trained[i]['close'])
+        axes = self.plotter.plot_multiple({
+            'id': 'kline',
+            'title': 'kline',
+            'xlabel': 'time',
+            'ylabel': ['close', 'fund_total'],
+            'x_data': [time, time],
+            'y_data': [close, fund_totals],
+        })
+
+        # plot actions and funds
+        action_x = []
+        action_y = []
+        fund_totals_step_x = []
+        fund_totals_step_y = []
+        action_long_x = []
+        action_long_y = []
+        action_short_x = []
+        action_short_y = []
+        time = range(partial)
+        for i in time:
+            if i == 0 or self.account.actions[i-1] != self.account.actions[i]:
+                action_x.append(i)
+                action_y.append(self.backtest_data.klines_trained[i]['close'])
+                fund_totals_step_x.append(i)
+                fund_totals_step_y.append(self.account.fund_totals[i])
+                if self.account.actions[i] == 0:
+                    action_long_x.append(i)
+                    action_long_y.append(self.backtest_data.klines_trained[i]['close'])
+                elif self.account.actions[i] == 1:
+                    action_short_x.append(i)
+                    action_short_y.append(self.backtest_data.klines_trained[i]['close'])
+        if self.__action_long_pc is not None:
+            self.__action_long_pc.remove()
+        if self.__action_short_pc is not None:
+            self.__action_short_pc.remove()
+        axes = self.plotter.plot_multiple({
+            'id': 'action',
+            'title': 'action',
+            'xlabel': 'time',
+            'ylabel': ['action', 'fund_totals_step'],
+            'x_data': [action_x, fund_totals_step_x],
+            'y_data': [action_y, fund_totals_step_y],
+        })
+        self.__action_long_pc = self.plotter.plot_scatter({
+            'id': 'action',
+            'axes': axes[0],
+            'x_data': action_long_x,
+            'y_data': action_long_y,
+            's': 25,
+            'c': 'red',
+            'marker': '^'
+        })
+        self.__action_short_pc = self.plotter.plot_scatter({
+            'id': 'action',
+            'axes': axes[0],
+            'x_data': action_short_x,
+            'y_data': action_short_y,
+            's': 25,
+            'c': 'blue',
+            'marker': 'v'
+        })
+        return
 
     def close(self):
-        pass
+        return

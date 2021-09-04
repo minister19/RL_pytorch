@@ -28,8 +28,10 @@ class SingleIndicator:
 
 
 class BacktestData:
+    skipped_klines = 60
+
     def __init__(self) -> None:
-        self.i = 0
+        self.i = BacktestData.skipped_klines  # ema_3 requires to skip 5*6*2=60 klines
         self.klines = []
         self.emas_trend = SingleIndicator()
         self.emas_support = SingleIndicator()
@@ -40,14 +42,15 @@ class BacktestData:
         self.period_sig = SingleIndicator()
         self.rsi_sig = SingleIndicator()
         self.withdraw = SingleIndicator()
-        self.state = []
+        self.states = []
 
     async def sync(self):
         '''
         Use Websocket client to sync data from huobi_futures_python server.
         '''
+        freq = '15min'
         async with client.connect('ws://localhost:6801') as websocket:
-            await websocket.send('kline_60min_sync')
+            await websocket.send('kline_'+freq+'_sync')
             msg1 = await websocket.recv()
             data1 = json.loads(msg1)
             klines = data1['data']
@@ -56,7 +59,7 @@ class BacktestData:
                 klines[i]['id'] -= 8*60*60
             self.klines = klines
 
-            await websocket.send('indic_60min_sync')
+            await websocket.send('indic_'+freq+'_sync')
             msg2 = await websocket.recv()
             data2 = json.loads(msg2)
             ema_3 = data2['data']['emas']['ema_3']
@@ -93,7 +96,7 @@ class BacktestData:
             self.withdraw.value = withdraw
 
     def reset(self):
-        self.i = 0
+        self.i = BacktestData.skipped_klines
         self.forward()
 
     def forward(self):
@@ -101,11 +104,11 @@ class BacktestData:
             return
         else:
             kline = self.klines[self.i]
-            self.state.clear()
-            self.state.append(kline)
+            self.states.clear()
+            self.states.append(kline)
             for indic in self.indicators:
                 val = indic.value[self.i]
-                self.state.append(val)
+                self.states.append(val)
                 if indic == self.withdraw:
                     if val == -1:
                         new_cost = kline['low']
@@ -115,7 +118,7 @@ class BacktestData:
                         new_cost = kline['close']
                 else:
                     new_cost = kline['close']
-                self.state.append(indic.forward(self.i, kline['close'], new_cost))
+                self.states.append(indic.forward(self.i, kline['close'], new_cost))
             self.i += 1
 
     @property
@@ -132,8 +135,16 @@ class BacktestData:
                 )
 
     @property
+    def states_dim(self):
+        return len(self.indicators)*2
+
+    @property
     def terminated(self):
         return self.i >= len(self.klines)
+
+    @property
+    def klines_trained(self):
+        return self.klines[BacktestData.skipped_klines:]
 
 
 if __name__ == '__main__':
@@ -143,10 +154,10 @@ if __name__ == '__main__':
     loop.run_until_complete(bd.sync())
     for i in range(len(bd.klines)):
         bd.forward()
-        x = bd.state[0]
+        x = bd.states[0]
         print(f'{datetime.fromtimestamp(x["id"], tz=None)}, {x["close"]}', end='\t')
 
-        x = bd.state[1:]
+        x = bd.states[1:]
         print(f'e_trend {x[0]}, {x[1]:.3f}', end='\t')
         print(f'e_support {x[2]}, {x[3]:.3f}', end='\t')
         print(f'q_sign {x[4]}, {x[5]:.3f}', end='\t')

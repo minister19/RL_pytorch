@@ -31,3 +31,4 @@
 2. 2020-08-18 Shawn: 打印 reward 曲线，验证指标. Reason: Done.
 3. 2021-08-29 Shawn: 'U' action means to hold on to previous action. Reason: Well this action can be saved if reduce action transitions.
 4. 2020-08-18 Shawn: design algorithm to reduce action transitions. Reason: Done.
+5. reward = 1 + margin, 1 for if margin >=0, one step forward. Reason: trade_fee has the same effect.
