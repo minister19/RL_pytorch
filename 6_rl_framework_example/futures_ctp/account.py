@@ -8,9 +8,6 @@ class Action:
 
 
 ActionTable = {
-    # 0: Action('L', 1.0),
-    # 1: Action('S', 1.0),
-
     0: Action('L', 1.0),
     1: Action('S', 1.0),
     2: Action('N', 0),
@@ -42,6 +39,7 @@ class Account:
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
+        self.avg_cost = None
         self.pre_cost = None
         self.actions = []
         self.margins = []
@@ -51,50 +49,44 @@ class Account:
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0
+        self.avg_cost = None
         self.pre_cost = None
         self.actions.clear()
         self.margins.clear()
         self.fund_totals.clear()
 
     def take_action(self, action: int, price: float):
-        if len(self.actions) <= 0:
-            self.trade_fee = 0
-        elif self.actions[-1] != action:
-            self.trade_fee = -0.01
-        else:
-            self.trade_fee = 0.00001
-
+        self.trade_fee = 0
         _action = ActionTable[action]
         if _action.posi == 'N':  # 全平
-            self.__close(1.0)
+            self.__close(self.vol)
         elif _action.posi == self.posi:  # 增减仓
             if _action.vol > self.vol:  # 增仓
                 self.__open(_action.posi, _action.vol - self.vol, price)
             elif _action.vol < self.vol:  # 减仓
                 self.__close(self.vol - _action.vol)
         elif _action.posi != self.posi:  # 反手
-            self.__close(1.0)
+            self.__close(self.vol)
             self.__open(_action.posi, _action.vol, price)
         else:
             raise RuntimeError("Invalid action", str(_action))
         self.actions.append(action)
 
     def update_margin(self, price: float):
-        margin_base = 50000
         if self.pre_cost:
             if self.posi == 'L':
-                margin = (price - self.pre_cost) / margin_base * self.vol
+                margin = (price - self.pre_cost) / self.avg_cost * self.vol
             elif self.posi == 'S':
-                margin = (self.pre_cost - price) / margin_base * self.vol
+                margin = (self.pre_cost - price) / self.avg_cost * self.vol
             else:
                 margin = 0
         else:
             margin = 0
         _margin = round(margin, 5)
-        logging.info(f'{self.pre_cost}\t{price}\t{self.nominal_posi}\t{_margin}')
         self.margins.append(_margin)
         self.fund_total += _margin
         self.fund_totals.append(self.fund_total)
+        # logging.info(f'{self.pre_cost}\t{price}\t{self.nominal_posi}\t{_margin}')
         self.pre_cost = price
 
     def __open(self, posi, d_vol, price: float):
@@ -102,14 +94,18 @@ class Account:
             raise RuntimeError("Invalid posi", posi)
         self.posi = posi
         self.vol += d_vol
-        return
+        if self.avg_cost:
+            self.avg_cost = (self.avg_cost*(self.vol-d_vol) + price*d_vol) / self.vol
+        else:
+            self.avg_cost = price
+        self.trade_fee -= 0.005*d_vol
 
     def __close(self, d_vol):
-        if d_vol == 1.0:
+        self.vol -= d_vol
+        if self.vol == 0.0:
             self.posi = 'N'
-            self.vol = 0
-        else:
-            self.vol -= d_vol
+            self.avg_cost = None
+        self.trade_fee -= 0.005*d_vol
 
     @property
     def fund_fixed(self):
