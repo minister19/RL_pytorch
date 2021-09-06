@@ -19,18 +19,6 @@ ActionTable = {
     # 4: Action('N', 0),
 }
 
-# TODO:
-# 2. Design algorithms to control number of actions to a smaller range.
-# 2. How about for every x steps, only y actions can be taken, if exceeds, done this episode.
-# 2. If fixed number of actions are used up, the last action's state is calculated by last kline rather than next kline.
-# 3. More accurate trade fee on both open and close action.
-# 4. Margin basing on avg_cost rather than margin_base, otherwise model would not work for general purpose.
-# 5. Tune trade fee and control how many actions taken.
-# 6. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
-# 7. More Klines to train.
-# 8. Consider Action 'N'.
-# 9. Consider norminal margin, stepped ones, rather than decimal ones.
-
 
 class Account:
     def __init__(self):
