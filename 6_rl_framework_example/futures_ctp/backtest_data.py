@@ -31,8 +31,9 @@ class BacktestData:
     skipped_klines = 60
 
     def __init__(self) -> None:
+        self.freq = '15min'
+        self._klines = []
         self.i = BacktestData.skipped_klines  # ema_3 requires to skip 5*6*2=60 klines
-        self.klines = []
         self.emas_trend = SingleIndicator()
         self.emas_support = SingleIndicator()
         self.qianlon_sign = SingleIndicator()
@@ -48,18 +49,17 @@ class BacktestData:
         '''
         Use Websocket client to sync data from huobi_futures_python server.
         '''
-        freq = '15min'
         async with client.connect('ws://localhost:6801') as websocket:
-            await websocket.send('kline_'+freq+'_sync')
+            await websocket.send('kline_'+self.freq+'_sync')
             msg1 = await websocket.recv()
             data1 = json.loads(msg1)
             klines = data1['data']
 
             for i in range(len(klines)):
                 klines[i]['id'] -= 8*60*60
-            self.klines = klines
+            self._klines = klines
 
-            await websocket.send('indic_'+freq+'_sync')
+            await websocket.send('indic_'+self.freq+'_sync')
             msg2 = await websocket.recv()
             data2 = json.loads(msg2)
             ema_3 = data2['data']['emas']['ema_3']
@@ -103,7 +103,7 @@ class BacktestData:
         if self.terminated:
             return
         else:
-            kline = self.klines[self.i]
+            kline = self._klines[self.i]
             self.states.clear()
             self.states.append(kline)
             for indic in self.indicators:
@@ -140,11 +140,11 @@ class BacktestData:
 
     @property
     def terminated(self):
-        return self.i >= len(self.klines)
+        return self.i >= len(self._klines)
 
     @property
-    def klines_trained(self):
-        return self.klines[BacktestData.skipped_klines:]
+    def klines(self):
+        return self._klines[BacktestData.skipped_klines:]
 
 
 if __name__ == '__main__':
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     bd = BacktestData()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(bd.sync())
-    for i in range(len(bd.klines)):
+    for i in range(len(bd._klines)):
         bd.forward()
         x = bd.states[0]
         print(f'{datetime.fromtimestamp(x["id"], tz=None)}, {x["close"]}', end='\t')
