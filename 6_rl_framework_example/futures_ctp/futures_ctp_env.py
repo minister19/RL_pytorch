@@ -1,7 +1,7 @@
 import asyncio
 import copy
 from rl_m19.envs import BaseEnv
-from account import Account
+from account import ActionTable, Account
 from backtest_data import BacktestData
 
 '''
@@ -107,13 +107,17 @@ class FuturesCTP(BaseEnv):
         return self._unsqueeze_tensor(state)
 
     def render(self):
+        _actions = self.account.actions
+        _fund_totals = self.account.fund_totals
+        _klines = self.backtest_data.klines
+
         # plot klines and funds
-        partial = len(self.account.actions)
-        close = []
-        fund_totals = self.account.fund_totals[0:partial]
+        partial = len(_actions)
         time = range(partial)
+        close = []
         for i in time:
-            close.append(self.backtest_data.klines_trained[i]['close'])
+            close.append(_klines[i]['close'])
+        fund_totals = _fund_totals[0:partial]
         axes = self.plotter.plot_multiple({
             'id': 'kline',
             'title': 'kline',
@@ -124,44 +128,46 @@ class FuturesCTP(BaseEnv):
         })
 
         # plot actions and funds
-        action_x = []
-        action_y = []
-        fund_totals_step_x = []
-        fund_totals_step_y = []
-        action_long_x = []
-        action_long_y = []
-        action_short_x = []
-        action_short_y = []
+        action = [[], []]
+        fund_totals_step = [[], []]
+        action_long = [[], []]
+        action_short = [[], []]
+        action_neutral = [[], []]
         time = range(partial)
         for i in time:
-            if i == 0 or self.account.actions[i-1] != self.account.actions[i]:
-                action_x.append(i)
-                action_y.append(self.backtest_data.klines_trained[i]['close'])
-                fund_totals_step_x.append(i)
-                fund_totals_step_y.append(self.account.fund_totals[i])
-                if self.account.actions[i] == 0:
-                    action_long_x.append(i)
-                    action_long_y.append(self.backtest_data.klines_trained[i]['close'])
-                elif self.account.actions[i] == 1:
-                    action_short_x.append(i)
-                    action_short_y.append(self.backtest_data.klines_trained[i]['close'])
+            if i == 0 or _actions[i-1] != _actions[i]:
+                action[0].append(i)
+                action[1].append(_klines[i]['close'])
+                fund_totals_step[0].append(i)
+                fund_totals_step[1].append(_fund_totals[i])
+                if ActionTable[_actions[i]].posi == 'L':
+                    action_long[0].append(i)
+                    action_long[1].append(_klines[i]['close'])
+                elif ActionTable[_actions[i]].posi == 'S':
+                    action_short[0].append(i)
+                    action_short[1].append(_klines[i]['close'])
+                elif ActionTable[_actions[i]].posi == 'N':
+                    action_neutral[0].append(i)
+                    action_neutral[1].append(_klines[i]['close'])
         if self.__action_long_pc is not None:
             self.__action_long_pc.remove()
         if self.__action_short_pc is not None:
             self.__action_short_pc.remove()
+        if self.__action_neutral_pc is not None:
+            self.__action_neutral_pc.remove()
         axes = self.plotter.plot_multiple({
             'id': 'action',
             'title': 'action',
             'xlabel': 'time',
             'ylabel': ['action', 'fund_totals_step'],
-            'x_data': [action_x, fund_totals_step_x],
-            'y_data': [action_y, fund_totals_step_y],
+            'x_data': [action[0], fund_totals_step[0]],
+            'y_data': [action[1], fund_totals_step[1]],
         })
         self.__action_long_pc = self.plotter.plot_scatter({
             'id': 'action',
             'axes': axes[0],
-            'x_data': action_long_x,
-            'y_data': action_long_y,
+            'x_data': action_long[0],
+            'y_data': action_long[1],
             's': 25,
             'c': 'red',
             'marker': '^'
@@ -169,11 +175,20 @@ class FuturesCTP(BaseEnv):
         self.__action_short_pc = self.plotter.plot_scatter({
             'id': 'action',
             'axes': axes[0],
-            'x_data': action_short_x,
-            'y_data': action_short_y,
+            'x_data': action_short[0],
+            'y_data': action_short[1],
             's': 25,
-            'c': 'blue',
+            'c': 'green',
             'marker': 'v'
+        })
+        self.__action_neutral_pc = self.plotter.plot_scatter({
+            'id': 'action',
+            'axes': axes[0],
+            'x_data': action_neutral[0],
+            'y_data': action_neutral[1],
+            's': 25,
+            'c': 'orange',
+            'marker': 'o'
         })
         return
 
