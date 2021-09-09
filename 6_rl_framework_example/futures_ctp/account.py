@@ -21,9 +21,12 @@ ActionTable = {
 
 
 class Account:
+    TRADE_FEE_RATIO = 0.002
+
     def __init__(self):
         self.states_dim = 2
         self.actions_dim = 2
+        self.trade_fee = None
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
@@ -34,6 +37,7 @@ class Account:
         self.fund_totals = []
 
     def reset(self):
+        self.trade_fee = None
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0
@@ -44,6 +48,9 @@ class Account:
         self.fund_totals.clear()
 
     def take_action(self, action: int, price: float):
+        '''
+        trade_fee algorithm
+        '''
         self.trade_fee = 0
         _action = ActionTable[action]
         if _action.posi == 'N':  # 全平
@@ -86,14 +93,14 @@ class Account:
             self.avg_cost = (self.avg_cost*(self.vol-d_vol) + price*d_vol) / self.vol
         else:
             self.avg_cost = price
-        self.trade_fee -= 0.005*d_vol
+        self.trade_fee -= Account.TRADE_FEE_RATIO*d_vol
 
     def __close(self, d_vol):
         self.vol -= d_vol
         if self.vol == 0.0:
             self.posi = 'N'
             self.avg_cost = None
-        self.trade_fee -= 0.005*d_vol
+        self.trade_fee -= Account.TRADE_FEE_RATIO*d_vol
 
     @property
     def fund_fixed(self):

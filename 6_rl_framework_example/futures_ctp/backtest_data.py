@@ -31,7 +31,7 @@ class BacktestData:
     skipped_klines = 60
 
     def __init__(self) -> None:
-        self.freq = '15min'
+        self.freq = '60min'
         self._klines = []
         self.i = BacktestData.skipped_klines  # ema_3 requires to skip 5*6*2=60 klines
         self.emas_trend = SingleIndicator()
