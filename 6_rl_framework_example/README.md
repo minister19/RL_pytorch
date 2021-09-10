@@ -32,7 +32,7 @@
 1. 2020-08-18 Shawn: 仅当 reward 绝对值较大时保存 memory. Reason: 不能有幸存者偏差，走向局部优化。
 2. 2021-08-29 Shawn: 'U' action means to hold on to previous action. Reason: saved by trade_fee algorithm.
 3. 2021-08-31 Shawn: reward = 1 + margin, 1 for if margin >=0, 1 step forward. Reason: saved by trade_fee algorithm.
-4. 2021-09-05 Shawn: If fixed number of actions are used up, the last action's state is calculated by last kline rather than next kline. Action 切换超过一定数量即结算 episode，用以约束 action 频繁切换: early-done algorithm. Reason: trainning data (klines) are also reduced, deteriates learning progress, should be useful as part of risk management module.
+4. 2021-09-05 Shawn: If fixed number of actions are used up, the last action's state is calculated by last kline rather than next kline. Action 切换超过一定数量即结算 episode，用以约束 action 频繁切换: early-done algorithm. Reason: trainning data (klines) are also reduced, deteriorates learning progress, should be useful as part of risk management module.
 5. 2021-09-05 Shawn: For every x steps, only y actions can be taken, if exceeds, done this episode. Reason: variant of early-done algorithm.
 6. 2021-09-06 Shawn: update target model only when fund_totals curve increases. Reason: 不能有幸存者偏差，走向局部优化。
 
@@ -41,3 +41,6 @@
 1. More Klines to train.
 2. Consider Action 'N'.
 3. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
+4. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
+5. If action alignes with withdraw signal, action applies tick price instead of close price to simulate tick operations.
+6. 由于资金有限，实际生产环境时，无法对所有监测交易品进行全时段持有，所以要根据信号可靠性进一步筛选，间断持有。但某些高度关注/用于科研的交易品可以设置为全时段持有。
