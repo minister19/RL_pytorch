@@ -86,7 +86,10 @@ class FuturesCTP(BaseEnv):
 
         # 4. update reward basing on next state
         margin = self.account.margins[-1]
-        reward = (margin + self.account.trade_fee)*100
+        if ActionTable[action].posi == 'N':
+            reward = self.account.trade_fee
+        else:
+            reward = (margin + self.account.trade_fee)*100
 
         # 5. test if done
         if self.account.terminated or self.backtest_data.terminated:
