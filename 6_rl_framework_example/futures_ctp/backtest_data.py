@@ -150,8 +150,7 @@ class BacktestData:
 if __name__ == '__main__':
     from datetime import datetime
     bd = BacktestData()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(bd.sync())
+    asyncio.run(bd.sync())
     for i in range(len(bd._klines)):
         bd.forward()
         x = bd.states[0]

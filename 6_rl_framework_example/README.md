@@ -18,8 +18,7 @@
 4. Plot actions as markers.
 5. Margin basing on avg_cost rather than margin_base, otherwise model would not work for general purpose.
 6. Consider action 'N', if action is 'N', reward is small value wrt trade_fee. 优点：较小的回撤。缺点：收益变低，误操作也有。
-7. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
-8. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
+7. More Klines to train.
 
 ### Archived ideas
 
@@ -34,7 +33,18 @@
 
 ### TODO:
 
-1. More Klines to train.
+1. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
+
+- Find the relationships:
+  - eps decay - memory capacity
+  - batch size - memory capacity
+  - eps decay - train set
+  - batch size - train set
+- Plot train loss wrt test loss
+
+2. What if only long position or only short position?
+3. What if do not train position or margin or either, because position can be viewed as outcome/result only, and margin contributes to reward.
+4. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
 
 ### Futures_ctp to-research
 

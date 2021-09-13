@@ -39,7 +39,7 @@ class Plotter():
             display.clear_output(wait=True)
             display.display(fig)
         else:
-            plt.pause(0.1)  # pause a bit so that plots are updated
+            plt.pause(0.2)  # pause a bit so that plots are updated
         return axes
 
     def plot_single_with_mean(self, config):
@@ -82,7 +82,7 @@ class Plotter():
             display.clear_output(wait=True)
             display.display(fig)
         else:
-            plt.pause(0.1)  # pause a bit so that plots are updated
+            plt.pause(0.2)  # pause a bit so that plots are updated
         return axes
 
     def plot_multiple(self, config):
@@ -130,7 +130,7 @@ class Plotter():
             display.clear_output(wait=True)
             display.display(fig)
         else:
-            plt.pause(0.1)  # pause a bit so that plots are updated
+            plt.pause(0.2)  # pause a bit so that plots are updated
         return axes
 
     def plot_scatter(self, config):
@@ -157,7 +157,7 @@ class Plotter():
             display.clear_output(wait=True)
             display.display(fig)
         else:
-            plt.pause(0.1)  # pause a bit so that plots are updated
+            plt.pause(0.2)  # pause a bit so that plots are updated
         return path_collection
 
     def plot_end(self):

@@ -55,8 +55,7 @@ class FuturesCTP(BaseEnv):
         super().__init__(device, plotter)
         self.account = Account()
         self.backtest_data = BacktestData()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.backtest_data.sync())
+        asyncio.run(self.backtest_data.sync())
         self.states_dim = self.account.states_dim + self.backtest_data.states_dim
         self.actions_dim = self.account.actions_dim
         self.steps = 0
@@ -113,8 +112,10 @@ class FuturesCTP(BaseEnv):
         _actions = self.account.actions
         _fund_totals = self.account.fund_totals
         _klines = self.backtest_data.klines
+        # self.render_klines_and_funds(_actions, _fund_totals, _klines)
+        # self.render_actions_and_funds(_actions, _fund_totals, _klines)
 
-        # plot klines and funds
+    def render_klines_and_funds(self, _actions, _fund_totals, _klines):
         partial = len(_actions)
         time = range(partial)
         close = []
@@ -129,8 +130,10 @@ class FuturesCTP(BaseEnv):
             'x_data': [time, time],
             'y_data': [close, fund_totals],
         })
+        return
 
-        # plot actions and funds
+    def render_actions_and_funds(self, _actions, _fund_totals, _klines):
+        partial = len(_actions)
         action = [[], []]
         fund_totals_step = [[], []]
         action_long = [[], []]
