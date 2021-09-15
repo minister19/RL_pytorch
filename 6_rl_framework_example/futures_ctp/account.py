@@ -25,7 +25,7 @@ class Account:
 
     def __init__(self):
         self.actions_dim = 2
-        self.trade_fee = None
+        self.trade_fee = 0
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
@@ -36,7 +36,7 @@ class Account:
         self.fund_totals = []
 
     def reset(self):
-        self.trade_fee = None
+        self.trade_fee = 0
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0

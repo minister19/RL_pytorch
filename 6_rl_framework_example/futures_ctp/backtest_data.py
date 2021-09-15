@@ -36,12 +36,13 @@ class SingleIndicator:
 
 class BacktestData:
     FREQ = '60min'
-    COUNT = 3060
-    SKIPPED_KLINES = 60
+    COUNT = 1060
+    SKIPPED = 60
+    TRAINED = COUNT - SKIPPED
 
     def __init__(self) -> None:
         self._klines = []
-        self.i = BacktestData.SKIPPED_KLINES  # ema_3 requires to skip 5*6*2=60 klines
+        self.i = BacktestData.SKIPPED  # ema_3 requires to skip 5*6*2=60 klines
         self.emas_trend = SingleIndicator()
         self.emas_support = SingleIndicator()
         self.qianlon_sign = SingleIndicator()
@@ -104,7 +105,7 @@ class BacktestData:
             self.withdraw.value = withdraw
 
     def reset(self):
-        self.i = BacktestData.SKIPPED_KLINES
+        self.i = BacktestData.SKIPPED
         self.forward()
 
     def forward(self):
@@ -153,7 +154,7 @@ class BacktestData:
 
     @property
     def klines(self):
-        return self._klines[BacktestData.SKIPPED_KLINES:]
+        return self._klines[BacktestData.SKIPPED:]
 
 
 if __name__ == '__main__':
