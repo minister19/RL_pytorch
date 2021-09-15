@@ -14,21 +14,20 @@ Observation - Account:
     Num     Obersvation     Min     Max     Discrete
     0       Fund            -inf    inf     
     1       Position                        -1.0/-0.5/0/0.5/1.0
-    2       Margin (%)                      -2/-1/0/1/2
+    2       Margin (%)      -inf    inf     -2/-1/0/1/2
 Observation - Indicators:
     Type: Box
     Num     Obersvation     Min     Max     Discrete
-    0       id
-    1       close
-    2       Emas trend                      -1/0/1
-    3       Emas support                    -1/0/1
-    4       Qianlon sign                    -1/0/1
-    5       Qianlon trend                   -1/0/1
-    6       Qianlon vel sign                -1/0/1
-    7       Boll sig                        -4/-3/-2/0/2/3/4
-    8       Period sig                      -2/-1/0/1/2
-    9       RSI sig                         -2/-1/0/1/2
-    10      Withdraw                        -1/0/1
+    0       kline
+    1       Emas trend                      -1/0/1
+    2       Emas support                    -1/0/1
+    3       Qianlon sign                    -1/0/1
+    4       Qianlon trend                   -1/0/1
+    5       Qianlon vel sign                -1/0/1
+    6       Boll sig                        -4/-3/-2/0/2/3/4
+    7       Period sig                      -2/-1/0/1/2
+    8       RSI sig                         -2/-1/0/1/2
+    9       Withdraw sig                    -1/0/1
 Actions:
     Type: Discrete
     Num     Action
@@ -41,12 +40,12 @@ Reward:
     Consider steps and margin, reward = margin + trade_fee
 Starting State:
     Indicators = history[60] (skip EMA, SMA's beginning values, 5*6*2=60)
-    Fund = 10K (ignored because of continuity)
-    Position = 0
+    Fund = 1.0
+    Position = 'N'
     Margin = 0
 Episode Termination:
     Indicators = history[-1]
-    Fund <= 5K
+    Fund <= 0.5
 '''
 
 
@@ -56,7 +55,7 @@ class FuturesCTP(BaseEnv):
         self.account = Account()
         self.backtest_data = BacktestData()
         asyncio.run(self.backtest_data.sync())
-        self.states_dim = self.account.states_dim + self.backtest_data.states_dim
+        self.states_dim = self.backtest_data.states_dim
         self.actions_dim = self.account.actions_dim
         self.steps = 0
         self.__action_long_pc = None
@@ -64,10 +63,10 @@ class FuturesCTP(BaseEnv):
         self.__action_neutral_pc = None
 
     def __get_state(self):
-        s1 = copy.copy(self.account.states[1:])
-        s2 = copy.copy(self.backtest_data.states[1:])
+        s1 = copy.copy(self.account.states)
+        s2 = copy.copy(self.backtest_data.states)
         s3 = s1 + s2
-        return s3
+        return s3[4:]
 
     def step(self, action: int):
         self.steps += 1
@@ -86,9 +85,9 @@ class FuturesCTP(BaseEnv):
         # 4. update reward basing on next state
         margin = self.account.margins[-1]
         if ActionTable[action].posi == 'N':
-            reward = self.account.trade_fee
+            reward = self.account.trade_fee * 100
         else:
-            reward = (margin + self.account.trade_fee)*100
+            reward = (margin + self.account.trade_fee) * 100
 
         # 5. test if done
         if self.account.terminated or self.backtest_data.terminated:
@@ -113,7 +112,7 @@ class FuturesCTP(BaseEnv):
         _fund_totals = self.account.fund_totals
         _klines = self.backtest_data.klines
         # self.render_klines_and_funds(_actions, _fund_totals, _klines)
-        # self.render_actions_and_funds(_actions, _fund_totals, _klines)
+        self.render_actions_and_funds(_actions, _fund_totals, _klines)
 
     def render_klines_and_funds(self, _actions, _fund_totals, _klines):
         partial = len(_actions)

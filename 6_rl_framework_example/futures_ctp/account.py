@@ -21,11 +21,10 @@ ActionTable = {
 
 
 class Account:
-    TRADE_FEE_RATIO = 0.005
+    TRADE_FEE_RATIO = 0.002
 
     def __init__(self):
-        self.states_dim = 2
-        self.actions_dim = 3
+        self.actions_dim = 2
         self.trade_fee = None
         self.fund_total = 1.0
         self.posi = 'N'

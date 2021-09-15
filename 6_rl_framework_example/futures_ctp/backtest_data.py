@@ -1,7 +1,7 @@
 import asyncio
 import json
 import numpy as np
-from websockets import client
+import websockets
 
 
 class SingleIndicator:
@@ -9,31 +9,39 @@ class SingleIndicator:
         self.value = []
         self.feedback_sign = None
         self.feedback_cost = None
+        self.max_margin = None
 
     def forward(self, i, close, new_cost):
         s = np.sign(self.value[i])
         if self.feedback_sign:
             if s == 0 or s == self.feedback_sign:
-                feedback = round((close - self.feedback_cost) * self.feedback_sign * 100 / self.feedback_cost, 3)
+                margin = round((close - self.feedback_cost) * self.feedback_sign * 100 / self.feedback_cost, 3)
+                withdraw = self.max_margin - margin
+                self.max_margin = max(self.max_margin, margin)
             else:
                 self.feedback_sign = s
                 self.feedback_cost = new_cost
-                feedback = 0
+                self.max_margin = 0
+                margin = 0
+                withdraw = 0
         else:
             if s != 0:
                 self.feedback_sign = s
                 self.feedback_cost = new_cost
-            feedback = 0
-        return feedback
+            self.max_margin = 0
+            margin = 0
+            withdraw = 0
+        return [margin, withdraw]
 
 
 class BacktestData:
-    skipped_klines = 60
+    FREQ = '60min'
+    COUNT = 3060
+    SKIPPED_KLINES = 60
 
     def __init__(self) -> None:
-        self.freq = '15min'
         self._klines = []
-        self.i = BacktestData.skipped_klines  # ema_3 requires to skip 5*6*2=60 klines
+        self.i = BacktestData.SKIPPED_KLINES  # ema_3 requires to skip 5*6*2=60 klines
         self.emas_trend = SingleIndicator()
         self.emas_support = SingleIndicator()
         self.qianlon_sign = SingleIndicator()
@@ -49,8 +57,8 @@ class BacktestData:
         '''
         Use Websocket client to sync data from huobi_futures_python server.
         '''
-        async with client.connect('ws://localhost:6801') as websocket:
-            await websocket.send('kline_'+self.freq+'_sync')
+        async with websockets.connect('ws://localhost:6801', max_size=2**30) as websocket:
+            await websocket.send('kline_'+BacktestData.FREQ+'_'+str(BacktestData.COUNT)+'_history')
             msg1 = await websocket.recv()
             data1 = json.loads(msg1)
             klines = data1['data']
@@ -59,7 +67,7 @@ class BacktestData:
                 klines[i]['id'] -= 8*60*60
             self._klines = klines
 
-            await websocket.send('indic_'+self.freq+'_sync')
+            await websocket.send('indic_'+BacktestData.FREQ+'_'+str(BacktestData.COUNT)+'_history')
             msg2 = await websocket.recv()
             data2 = json.loads(msg2)
             ema_3 = data2['data']['emas']['ema_3']
@@ -96,7 +104,7 @@ class BacktestData:
             self.withdraw.value = withdraw
 
     def reset(self):
-        self.i = BacktestData.skipped_klines
+        self.i = BacktestData.SKIPPED_KLINES
         self.forward()
 
     def forward(self):
@@ -118,7 +126,8 @@ class BacktestData:
                         new_cost = kline['close']
                 else:
                     new_cost = kline['close']
-                self.states.append(indic.forward(self.i, kline['close'], new_cost))
+                feedback = indic.forward(self.i, kline['close'], new_cost)
+                self.states.extend(feedback)
             self.i += 1
 
     @property
@@ -136,7 +145,7 @@ class BacktestData:
 
     @property
     def states_dim(self):
-        return len(self.indicators)*2
+        return len(self.indicators)*3
 
     @property
     def terminated(self):
@@ -144,7 +153,7 @@ class BacktestData:
 
     @property
     def klines(self):
-        return self._klines[BacktestData.skipped_klines:]
+        return self._klines[BacktestData.SKIPPED_KLINES:]
 
 
 if __name__ == '__main__':
