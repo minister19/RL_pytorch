@@ -5,6 +5,7 @@ from rl_m19.agent import DQNAgent
 class DQNAgentExt(DQNAgent):
     def __init__(self, config):
         super().__init__(config)
+        self.train_loss = []
 
     # q_eval, q_target: torch.tensor
     def gradient_descent(self, q_eval, q_target):
@@ -15,6 +16,7 @@ class DQNAgentExt(DQNAgent):
         # for param in self.policy_net.parameters():
         #     param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
+        return loss.item()
 
     def episode_learn(self, i_episode):
         state = self.config.env.reset()
@@ -37,6 +39,7 @@ class DQNAgentExt(DQNAgent):
 
                 # gradient descent
                 loss = self.gradient_descent(q_eval, q_target)
+                self.train_loss.append(loss)
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
@@ -53,3 +56,21 @@ class DQNAgentExt(DQNAgent):
             else:
                 # update state
                 state = next_state
+
+    def episodes_learn(self):
+        for i_episode in range(self.config.episodes):
+            self.episode_learn(i_episode)
+            if i_episode % self.config.TUF == 0:
+                # update memory
+                self.target_net.load_state_dict(self.policy_net.state_dict())
+
+            # plot train and test loss
+            time = range(len(self.train_loss))
+            self.config.plotter.plot_multiple({
+                'id': 'loss',
+                'title': 'loss',
+                'xlabel': 'step',
+                'ylabel': ['train_loss'],
+                'x_data': [time],
+                'y_data': [self.train_loss],
+            })
