@@ -16,7 +16,7 @@ class SingleIndicator:
         if self.feedback_sign:
             if s == 0 or s == self.feedback_sign:
                 margin = round((close - self.feedback_cost) * self.feedback_sign * 100 / self.feedback_cost, 3)
-                withdraw = self.max_margin - margin
+                withdraw = max(self.max_margin - margin, 0)
                 self.max_margin = max(self.max_margin, margin)
             else:
                 self.feedback_sign = s
