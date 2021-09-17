@@ -37,7 +37,7 @@ Actions:
     3       Short 1.0
     4       Neutral
 Reward:
-    Consider steps and margin, reward = margin + trade_fee
+    Consider steps and margin, reward = margin + ACTION_PENALTY
 Starting State:
     Indicators = history[60] (skip EMA, SMA's beginning values, 5*6*2=60)
     Fund = 1.0
@@ -53,9 +53,11 @@ class FuturesCTP(BaseEnv):
     def __init__(self, device, plotter=None) -> None:
         super().__init__(device, plotter)
         self.account = Account()
-        self.backtest_data = BacktestData()
-        asyncio.run(self.backtest_data.sync())
-        self.states_dim = self.backtest_data.states_dim
+        self.train_data = BacktestData()
+        asyncio.run(self.train_data.sync())
+        self.test_data = BacktestData()
+        asyncio.run(self.test_data.sync())
+        self.states_dim = self.account.states_dim + self.train_data.states_dim
         self.actions_dim = self.account.actions_dim
         self.steps = 0
         self.__action_long_pc = None
@@ -63,10 +65,10 @@ class FuturesCTP(BaseEnv):
         self.__action_neutral_pc = None
 
     def __get_state(self):
-        s1 = copy.copy(self.account.states)
-        s2 = copy.copy(self.backtest_data.states)
+        s1 = copy.copy(self.account.states[2:])
+        s2 = copy.copy(self.train_data.states[1:])
         s3 = s1 + s2
-        return s3[4:]
+        return s3
 
     def step(self, action: int):
         self.steps += 1
@@ -75,22 +77,21 @@ class FuturesCTP(BaseEnv):
         state = self.__get_state()
 
         # 2. take action
-        self.account.take_action(action, self.backtest_data.states[0]['close'])
+        self.account.take_action(action, self.train_data.states[0]['close'])
 
         # 3. get next state
-        self.backtest_data.forward()
-        self.account.update_margin(self.backtest_data.states[0]['close'])
+        self.train_data.forward()
+        self.account.update_margin(self.train_data.states[0]['close'])
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        margin = self.account.margins[-1]
-        if ActionTable[action].posi == 'N':
-            reward = self.account.trade_fee * 100
+        if ActionTable[action].posi in ['N', 'U']:
+            reward = Account.TRADE_FEE * 10
         else:
-            reward = (margin + self.account.trade_fee) * 100
+            reward = (self.account.nominal_margin + self.account.action_penalty) * 100
 
         # 5. test if done
-        if self.account.terminated or self.backtest_data.terminated:
+        if self.account.terminated or self.train_data.terminated:
             done = True
         else:
             done = False
@@ -102,7 +103,7 @@ class FuturesCTP(BaseEnv):
 
     def reset(self):
         self.account.reset()
-        self.backtest_data.reset()
+        self.train_data.reset()
         self.steps = 0
         state = self.__get_state()
         return self._unsqueeze_tensor(state)
@@ -110,7 +111,7 @@ class FuturesCTP(BaseEnv):
     def render(self):
         _actions = self.account.actions
         _fund_totals = self.account.fund_totals
-        _klines = self.backtest_data.klines
+        _klines = self.train_data.klines
         # self.render_klines_and_funds(_actions, _fund_totals, _klines)
         self.render_actions_and_funds(_actions, _fund_totals, _klines)
 

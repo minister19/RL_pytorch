@@ -21,9 +21,11 @@ ActionTable = {
 
 
 class Account:
-    TRADE_FEE_RATIO = 0.002
+    TRADE_FEE = 0.001
+    ACTION_PENALTY = 5
 
     def __init__(self):
+        self.states_dim = 1
         self.actions_dim = 2
         self.trade_fee = 0
         self.fund_total = 1.0
@@ -48,7 +50,7 @@ class Account:
 
     def take_action(self, action: int, price: float):
         '''
-        trade_fee algorithm
+        action_penalty algorithm
         '''
         self.trade_fee = 0
         _action = ActionTable[action]
@@ -59,6 +61,8 @@ class Account:
                 self.__open(_action.posi, _action.vol - self.vol, price)
             elif _action.vol < self.vol:  # 减仓
                 self.__close(self.vol - _action.vol)
+            else:  # 不变
+                pass
         elif _action.posi != self.posi:  # 反手
             self.__close(self.vol)
             self.__open(_action.posi, _action.vol, price)
@@ -78,7 +82,7 @@ class Account:
             margin = 0
         _margin = round(margin, 5)
         self.margins.append(_margin)
-        self.fund_total += _margin
+        self.fund_total += (_margin + self.trade_fee)
         self.fund_totals.append(self.fund_total)
         # logging.info(f'{self.pre_cost}\t{price}\t{self.nominal_posi}\t{_margin}')
         self.pre_cost = price
@@ -92,14 +96,18 @@ class Account:
             self.avg_cost = (self.avg_cost*(self.vol-d_vol) + price*d_vol) / self.vol
         else:
             self.avg_cost = price
-        self.trade_fee -= Account.TRADE_FEE_RATIO*d_vol
+        self.trade_fee -= Account.TRADE_FEE*d_vol
 
     def __close(self, d_vol):
         self.vol -= d_vol
         if self.vol == 0.0:
             self.posi = 'N'
             self.avg_cost = None
-        self.trade_fee -= Account.TRADE_FEE_RATIO*d_vol
+        self.trade_fee -= Account.TRADE_FEE*d_vol
+
+    @property
+    def action_penalty(self):
+        return self.trade_fee * Account.ACTION_PENALTY
 
     @property
     def fund_fixed(self):
