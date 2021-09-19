@@ -16,8 +16,8 @@ class SingleIndicator:
         if self.feedback_sign:
             if s == 0 or s == self.feedback_sign:
                 margin = round((close - self.feedback_cost) * self.feedback_sign * 100 / self.feedback_cost, 3)
-                withdraw = max(self.max_margin - margin, 0)
-                self.max_margin = max(self.max_margin, margin)
+                withdraw = min(margin - self.max_margin, 0)
+                self.max_margin = max(margin, self.max_margin)
             else:
                 self.feedback_sign = s
                 self.feedback_cost = new_cost
@@ -35,7 +35,7 @@ class SingleIndicator:
 
 
 class BacktestData:
-    FREQ = '60min'
+    FREQ = '15min'
     COUNT = 1060
     SKIPPED = 60
     TRAINED = COUNT - SKIPPED
