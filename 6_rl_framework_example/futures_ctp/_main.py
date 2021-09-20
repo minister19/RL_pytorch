@@ -9,10 +9,10 @@ from futures_ctp_env import FuturesCTP, BacktestData
 config = Config()
 config.episode_lifespan = 10**4
 config.episodes = 10**4
-config.BATCH_SIZE = 64
+config.BATCH_SIZE = 64  # should be power of 2, e.g. 2^n
 config.GAMMA = 0.999
 # config.EPS_fn = lambda s: 0.9
-config.EPS_fn = lambda s: 0.05 + (0.90 - 0.05) * math.exp(-1. * s / (BacktestData.COUNT-BacktestData.SKIPPED))
+config.EPS_fn = lambda s: 0.05 + (0.90 - 0.05) * math.exp(-1. * s / BacktestData.TRAINED)
 config.LR = 0.01  # LEARNING_RATE
 config.MC = BacktestData.TRAINED  # MEMORY_CAPACITY
 config.TUF = 5  # TARGET_UPDATE_FREQUENCY
