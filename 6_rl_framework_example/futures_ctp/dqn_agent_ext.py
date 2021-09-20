@@ -5,6 +5,8 @@ from rl_m19.agent import DQNAgent
 class DQNAgentExt(DQNAgent):
     def __init__(self, config):
         super().__init__(config)
+        self.train_loss = []
+        self.test_loss = []
         self.fund_totals = []
 
     def episode_learn(self, i_episode):
@@ -26,6 +28,7 @@ class DQNAgentExt(DQNAgent):
 
                 # gradient descent
                 loss = self.gradient_descent(q_eval, q_target)
+                self.train_loss.append(loss)
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
@@ -44,3 +47,25 @@ class DQNAgentExt(DQNAgent):
             else:
                 # update state
                 state = next_state
+
+    def episodes_learn(self):
+        for i_episode in range(self.config.episodes):
+            policy_net_bak = self.policy_net.state_dict()
+
+            self.episode_learn(i_episode)
+            if len(self.fund_totals) >= 2 and self.fund_totals[-1] < self.fund_totals[-2]:
+                self.policy_net.load_state_dict(policy_net_bak)
+            if i_episode % self.config.TUF == 0:
+                # update memory
+                self.target_net.load_state_dict(self.policy_net.state_dict())
+
+            # plot train and test loss
+            # time = range(len(self.train_loss))
+            # self.config.plotter.plot_multiple({
+            #     'id': 'loss',
+            #     'title': 'loss',
+            #     'xlabel': 'step',
+            #     'ylabel': ['train_loss'],
+            #     'x_data': [time],
+            #     'y_data': [self.train_loss],
+            # })
