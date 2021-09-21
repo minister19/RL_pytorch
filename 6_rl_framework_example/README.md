@@ -38,10 +38,12 @@
 - action_penalty algorithm
   - improve trade_fee calculation from fixed to action\*vol
   - distinguish action_penalty (affects action transition) from trade_fee (affects fund_total)
-- after_close algorithm
-  - train only when action changes
+- accumulated_reward algorithm
+  - only when action transits, assign accumulated reward to each action, and push to memory
+  - 随 action 切换添加 memory，而不是随 each action 添加 memory
 - early_done algorithm
-  - If fixed number of actions are used up, the last action's state is calculated by last kline rather than next kline. Action 切换超过一定数量即结算 episode，用以约束 action 频繁切换
+  - if action transits quota exhausted, episode is done
+  - if action transits quota exhausted, the last action's state is calculated by its next kline
   - action u 和 early_done 配合训练，action u 给予 small margin
 
 4. Model Input
