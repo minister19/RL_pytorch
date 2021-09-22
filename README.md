@@ -9,6 +9,7 @@ This repo records Shuang Gao's AI learning progress.
 2021-05-03 Shawn: ask for leave. Travelling to Tangyin.
 2021-05-13 Shawn: ask for leave. Play SC2.
 2021-05-13 Shawn: ask for leave. Xiaoyun visits.
+2021-09-22 Shawn: ask for leave. Illness recovery.
 
 # TODO
 
