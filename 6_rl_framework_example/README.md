@@ -77,6 +77,7 @@
 
 1. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
 2. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
+3. What signal should have feedback and what should not? Should margin and withdraw always present for a signal?
 
 - Find the relationships:
   - eps decay - memory capacity
