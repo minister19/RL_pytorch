@@ -20,14 +20,15 @@ Observation - Indicators:
     Num     Obersvation     Min     Max     Discrete
     0       kline
     1       Emas trend                      -1/0/1
-    2       Emas support                    -1/0/1
-    3       Qianlon sign                    -1/0/1
-    4       Qianlon trend                   -1/0/1
-    5       Qianlon vel sign                -1/0/1
-    6       Boll sig                        -4/-3/-2/0/2/3/4
-    7       Period sig                      -2/-1/0/1/2
-    8       RSI sig                         -2/-1/0/1/2
-    9       Withdraw sig                    -1/0/1
+            Emas support                    -1/0/1
+    2       Qianlon sign                    -1/0/1
+            Qianlon vel sign                -1/0/1
+    3       Boll sig                        -4/-3/-2/0/2/3/4
+    4       Period sig                      -2/-1/0/1/2
+    5       RSI sig                         -2/-1/0/1/2
+    6       RSV trend                       -1/0/1
+            RSV sig                         -1/0/1
+    7       Withdraw sig                    -1/0/1
 Actions:
     Type: Discrete
     Num     Action
@@ -57,7 +58,7 @@ class FuturesCTP(BaseEnv):
         asyncio.run(self.train_data.sync())
         self.test_data = BacktestData()
         asyncio.run(self.test_data.sync())
-        self.states_dim = self.account.states_dim + self.train_data.states_dim
+        self.states_dim = self.train_data.states_dim
         self.actions_dim = self.account.actions_dim
         self.steps = 0
         self.__action_long_pc = None
@@ -65,10 +66,7 @@ class FuturesCTP(BaseEnv):
         self.__action_neutral_pc = None
 
     def __get_state(self):
-        s1 = copy.copy(self.account.states[2:])
-        s2 = copy.copy(self.train_data.states[1:])
-        s3 = s1 + s2
-        return s3
+        return copy.copy(self.train_data.states[1:])
 
     def step(self, action: int):
         self.steps += 1

@@ -84,7 +84,7 @@ class Account:
             margin = 0
         _margin = round(margin, 5)
         self.margins.append(_margin)
-        self.fund_total += (_margin + self.trade_fee)
+        self.fund_total += (_margin - self.trade_fee)
         self.fund_totals.append(self.fund_total)
         # logging.info(f'{self.pre_cost}\t{price}\t{self.nominal_posi}\t{_margin}')
         self.pre_cost = price
@@ -110,14 +110,6 @@ class Account:
     @property
     def action_penalty(self):
         return self.trade_fee * Account.ACTION_PENALTY
-
-    @property
-    def fund_fixed(self):
-        return self.fund_total * self.vol
-
-    @property
-    def fund_liquid(self):
-        return self.fund_total - self.fund_fixed
 
     @property
     def nominal_posi(self):
