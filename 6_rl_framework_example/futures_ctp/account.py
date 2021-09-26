@@ -8,12 +8,12 @@ class Action:
 
 
 ActionTable = {
+    0: Action('L', 1.0),
+    1: Action('S', 1.0),
+
     # 0: Action('L', 1.0),
     # 1: Action('S', 1.0),
-
-    0: Action('L', 1.0),
-    1: Action('N', 0),
-    2: Action('S', 1.0),
+    # 2: Action('N', 0),
 
     # 0: Action('N', 0),
     # 1: Action('L', 0.5),
@@ -25,11 +25,10 @@ ActionTable = {
 
 class Account:
     TRADE_FEE = 0.001
-    ACTION_PENALTY = 3
+    ACTION_PENALTY = -3
 
     def __init__(self):
-        self.states_dim = 1
-        self.actions_dim = 3
+        self.actions_dim = 2
         self.trade_fee = 0
         self.fund_total = 1.0
         self.posi = 'N'
@@ -99,14 +98,14 @@ class Account:
             self.avg_cost = (self.avg_cost*(self.vol-d_vol) + price*d_vol) / self.vol
         else:
             self.avg_cost = price
-        self.trade_fee -= Account.TRADE_FEE*d_vol
+        self.trade_fee += Account.TRADE_FEE*d_vol
 
     def __close(self, d_vol):
         self.vol -= d_vol
         if self.vol == 0.0:
             self.posi = 'N'
             self.avg_cost = None
-        self.trade_fee -= Account.TRADE_FEE*d_vol
+        self.trade_fee += Account.TRADE_FEE*d_vol
 
     @property
     def action_penalty(self):
