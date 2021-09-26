@@ -29,7 +29,7 @@
 - klines
 - fund_totals
 - actions as markers.
-- train loss and test loss. Reason: too many data points to display, and often exploded.
+- train loss and test loss. Reason: too many data points to display, and often explodes.
 - More Klines to train.
 - Preprocess indicators.
 
@@ -48,20 +48,19 @@
 
 4. Model Input
 
-- Margin 是否应该作为 input？
-- Previous action 作为 input 加入到模型最后一层。
-
-5. Model Network
-
-- Update policy_net if reaches high score. Reason: verified with cart_pole. 我觉得和模型维度有关，这样容易局部最优解。
-- Update target_net if reaches high score. Reason: not working, loss explodes.
-- Compare RMSprop and AdamW. Reason: continue using RMSprop, AdamW behaves anti-optimization.
 - Do not train on position/margin, because position can be viewed as outcome/result only, and margin contributes to reward. Also, we can preprocess indic input，store into gpu for faster training process.
 
-6. Model Action
+5. Model Action
 
-- Consider action 'N', reward is small value wrt action_penalty. 优点：较小的回撤。缺点：收益变低，误操作也有，过拟合。
-- What if only long position or only short position? Reason: it works, loss convergs.
+- Consider action 'N', reward is small value wrt action_penalty. 优点：较小的回撤。缺点：收益变低。
+- What if only long position or only short position? 优点：较小的回撤。缺点：收益变低。
+
+6. Model Train
+
+- Update target_net if reaches high score. Reason: not working, loss explodes.
+- Update policy_net if reaches high score. Reason: verified with cart_pole, and be aware of overfitting.
+- Compare RMSprop and AdamW. Reason: continue using RMSprop, and AdamW behaves anti-optimization.
+- Be aware if training more than enough times, model is overfitting (loss explodes or fluctuates).
 
 ### Archived ideas
 
@@ -72,18 +71,8 @@
 5. 2021-09-05 Shawn: For every x steps, only y actions can be taken, if exceeds, done this episode. Reason: variant of early_done algorithm.
 6. If action alignes with withdraw signal, action applies tick price instead of close price to simulate tick operations. Reason: production mode, if kline finishes and action does not align with withdraw signal, close position.
 7. 由于资金有限，实际生产环境时，无法对所有监测交易品进行全时段持有，所以要根据信号可靠性进一步筛选，间断持有。但某些高度关注/用于科研的交易品可以设置为全时段持有。Reason: production mode.
-
-### TODO:
-
-1. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
-2. Be aware if training more than enough times, model is overfitting (loss drops, rise and drop again).
-3. What signal should have feedback and what should not? Should margin and withdraw always present for a signal?
-
-- Find the relationships:
-  - eps decay - memory capacity
-  - batch size - memory capacity
-  - eps decay - data trained
-  - batch size - data trained
+8. Evaluate how (close) have our indicators revealed nature of money/fund flow in the market, given a fixed period.
+9. What signal should have feedback and what should not? Should margin and withdraw always present for a signal? Reason: let the network params (weight and bias) decide.
 
 ### Futures_ctp to-research
 
@@ -93,3 +82,5 @@
 4. LSTM 模型做状态解析（利用它可以分析一段数据的特点），Q learning，训练出无监督状态-决策模型。Same idea on line: https://medium.com/@Lidinwise/trading-through-reinforcement-learning-using-lstm-neural-networks-6ffbb1f5e4a5
 5. Consider margin as stepped ones, rather than decimal ones.
 6. early_done algorithm，作为通用人工智能模型的一个特性。
+
+### TODO:

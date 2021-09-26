@@ -1,6 +1,25 @@
 from itertools import count
 from rl_m19.agent import DQNAgent
 
+'''
+- accumulated_reward algorithm
+  - only when action transits, assign accumulated reward to each action, and push to memory
+  - 随 action 切换添加 memory，而不是随 each action 添加 memory
+  
+- early_done algorithm
+  - if action transits quota exhausted, episode is done
+  - if action transits quota exhausted, the last action's state is calculated by its next kline
+  - action u 和 early_done 配合训练，action u 给予 small margin
+
+- Find the relationships:
+  - eps decay - memory capacity
+  - batch size - memory capacity
+  - eps decay - data trained
+  - batch size - data trained
+
+- episode train loss (mean) vs test loss
+'''
+
 
 class DQNAgentExt(DQNAgent):
     def __init__(self, config):

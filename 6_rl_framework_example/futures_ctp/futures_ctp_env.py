@@ -18,7 +18,7 @@ Observation - Account:
 Observation - Indicators:
     Type: Box
     Num     Obersvation     Min     Max     Discrete
-    0       kline
+    0       kline                           -
     1       Emas trend                      -1/0/1
             Emas support                    -1/0/1
     2       Qianlon sign                    -1/0/1

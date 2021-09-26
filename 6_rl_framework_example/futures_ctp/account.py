@@ -58,6 +58,8 @@ class Account:
         _action = ActionTable[action]
         if _action.posi == 'N':  # 全平
             self.__close(self.vol)
+        elif _action.posi == 'U':  # 观望
+            pass
         elif _action.posi == self.posi:  # 增减仓
             if _action.vol > self.vol:  # 增仓
                 self.__open(_action.posi, _action.vol - self.vol, price)
