@@ -36,7 +36,7 @@ class DQNAgent(BaseAgent):
         # target value
         mask_tuple = tuple(map(lambda s: s is not None, batch.next_state))
         non_final_mask = torch.tensor(mask_tuple, device=self.config.device, dtype=torch.bool)
-        # 2020-08-11 Shawn: if done, next_state should be None
+        # 2020-08-11 Shawn: if done, next_state should be None.
         non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
 
         q_next = torch.zeros(self.config.BATCH_SIZE, device=self.config.device)
@@ -51,6 +51,9 @@ class DQNAgent(BaseAgent):
         loss = self.loss_fn(q_eval, q_target)  # compute loss
         self.optimizer.zero_grad()
         loss.backward()
+        # 2020-08-13 Shawn: Sometimes, no clamp is better.
+        for param in self.policy_net.parameters():
+            param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
         return loss.item()
 

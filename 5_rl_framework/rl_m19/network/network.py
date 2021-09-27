@@ -64,8 +64,8 @@ class Nematode(BaseNetwork):
     def __init__(self, config: Config):
         super().__init__('Nematode')
         self.hidden = config.states_dim // 2
-        self.fc1 = nn.Linear(config.states_dim, self.hidden)
-        self.fc2 = nn.Linear(self.hidden, config.actions_dim)
+        self.fc1 = nn.Linear(config.states_dim, self.hidden, bias=False)
+        self.fc2 = nn.Linear(self.hidden, config.actions_dim, bias=False)
         self.to(config.device)
 
     def forward(self, x: Tensor):

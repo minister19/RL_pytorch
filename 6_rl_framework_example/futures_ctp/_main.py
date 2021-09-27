@@ -15,7 +15,7 @@ config.GAMMA = 0.999
 config.EPS_fn = lambda s: 0.05 + (0.90 - 0.05) * math.exp(-1. * s / BacktestData.TRAINED)
 config.LR = 0.01  # LEARNING_RATE
 config.MC = BacktestData.TRAINED  # MEMORY_CAPACITY
-config.TUF = 10  # TARGET_UPDATE_FREQUENCY
+config.TUF = 5  # TARGET_UPDATE_FREQUENCY
 
 config.logger = Logger()
 config.plotter = Plotter()

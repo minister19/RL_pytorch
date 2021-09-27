@@ -12,7 +12,7 @@ class DQNAgentExt(DQNAgent):
         loss = self.loss_fn(q_eval, q_target)  # compute loss
         self.optimizer.zero_grad()
         loss.backward()
-        # 2020-08-13 Shawn: While, no clamp is better sometimes.
+        # 2020-08-13 Shawn: Sometimes, no clamp is better.
         # for param in self.policy_net.parameters():
         #     param.grad.data.clamp_(-1, 1)
         self.optimizer.step()

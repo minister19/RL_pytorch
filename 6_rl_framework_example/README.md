@@ -53,6 +53,7 @@
 5. Model Action
 
 - Consider action 'N', reward is small value wrt action_penalty. 优点：较小的回撤。缺点：收益变低。
+- Consider action 'U', to
 - What if only long position or only short position? 优点：较小的回撤。缺点：收益变低。
 
 6. Model Train
@@ -84,3 +85,9 @@
 6. early_done algorithm，作为通用人工智能模型的一个特性。
 
 ### TODO:
+
+1. 可能是维度问题，action 有几个，对应几个维度。我的模型是否具有这么高的维度。
+2. Network 最后输出一个浮点数，作为开仓方向可信度？
+3. network params clip，取消 offset（bias=False）。
+4. Sig 的符号是否应该与 Kline 趋势一致，即与收益正负符号一致。
+5. Position margin 而不是 action margin，以及 withdraw，作为 model input？

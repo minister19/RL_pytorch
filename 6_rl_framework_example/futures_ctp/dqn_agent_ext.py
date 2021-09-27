@@ -28,6 +28,17 @@ class DQNAgentExt(DQNAgent):
         self.test_loss = []
         self.fund_totals = []
 
+    # q_eval, q_target: torch.tensor
+    def gradient_descent(self, q_eval, q_target):
+        loss = self.loss_fn(q_eval, q_target)  # compute loss
+        self.optimizer.zero_grad()
+        loss.backward()
+        # 2020-08-13 Shawn: While, no clamp is better sometimes.
+        # for param in self.policy_net.parameters():
+        #     param.grad.data.clamp_(-1, 1)
+        self.optimizer.step()
+        return loss.item()
+
     def episode_learn(self, i_episode):
         state = self.config.env.reset()
 
