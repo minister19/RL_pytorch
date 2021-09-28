@@ -7,72 +7,66 @@ class Action:
         self.vol = vol
 
 
-ActionTable = {
-    0: Action('L', 1.0),
-    1: Action('S', 1.0),
-
-    # 0: Action('L', 1.0),
-    # 1: Action('S', 1.0),
-    # 2: Action('N', 0),
-
-    # 0: Action('N', 0),
-    # 1: Action('L', 0.5),
-    # 2: Action('L', 1.0),
-    # 3: Action('S', 0.5),
-    # 4: Action('S', 1.0),
-}
+ActionTable = [
+    # Action('L', 0.5),
+    Action('L', 1.0),
+    # Action('S', 0.5),
+    Action('S', 1.0),
+    # Action('N', None),
+    Action('U', None),
+]
 
 
 class Account:
     TRADE_FEE = 0.001
-    ACTION_PENALTY = -3
+    ACTION_PENALTY = -10
 
     def __init__(self):
-        self.actions_dim = 2
+        self.actions_dim = len(ActionTable)
+        self.reset()
+
+    def reset(self):
         self.trade_fee = 0
+        self.transits = True
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
         self.avg_cost = None
         self.pre_cost = None
         self.actions = []
+        self.actions_real = []
         self.margins = []
         self.fund_totals = []
 
-    def reset(self):
-        self.trade_fee = 0
-        self.fund_total = 1.0
-        self.posi = 'N'
-        self.vol = 0
-        self.avg_cost = None
-        self.pre_cost = None
-        self.actions.clear()
-        self.margins.clear()
-        self.fund_totals.clear()
-
-    def take_action(self, action: int, price: float):
+    def take_action(self, _action: int, _price: float):
         '''
         action_penalty algorithm
+        accumulated_reward algorithm
         '''
         self.trade_fee = 0
-        _action = ActionTable[action]
-        if _action.posi == 'N':  # 全平
+        _action_real = _action
+        action = ActionTable[_action]
+        if action.posi == 'N':  # 全平
             self.__close(self.vol)
-        elif _action.posi == 'U':  # 观望
-            pass
-        elif _action.posi == self.posi:  # 增减仓
-            if _action.vol > self.vol:  # 增仓
-                self.__open(_action.posi, _action.vol - self.vol, price)
-            elif _action.vol < self.vol:  # 减仓
-                self.__close(self.vol - _action.vol)
-            else:  # 不变
-                pass
-        elif _action.posi != self.posi:  # 反手
+        elif action.posi == 'U':  # 观望
+            if len(self.actions) >= 1:
+                _action_real = self.actions_real[-1]
+        elif action.posi == self.posi:  # 增减仓
+            if action.vol > self.vol:  # 增仓
+                self.__open(action.posi, action.vol - self.vol, _price)
+            elif action.vol < self.vol:  # 减仓
+                self.__close(self.vol - action.vol)
+        elif action.posi != self.posi:  # 反手
             self.__close(self.vol)
-            self.__open(_action.posi, _action.vol, price)
+            self.__open(action.posi, action.vol, _price)
         else:
-            raise RuntimeError("Invalid action", str(_action))
-        self.actions.append(action)
+            raise RuntimeError("Invalid action", str(action))
+        self.actions.append(_action)
+        self.actions_real.append(_action_real)
+
+        self.transits = True
+        if len(self.actions_real) <= 1 or self.actions_real[-2] == self.actions_real[-1]:
+            self.transits = False
 
     def update_margin(self, price: float):
         if self.pre_cost:

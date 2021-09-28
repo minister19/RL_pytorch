@@ -83,8 +83,8 @@ class FuturesCTP(BaseEnv):
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        if ActionTable[action].posi in ['N', 'U']:
-            reward = Account.TRADE_FEE * 10
+        if not self.account.transits:
+            reward = (self.account.nominal_margin + Account.TRADE_FEE) * 100
         else:
             reward = (self.account.nominal_margin + self.account.action_penalty) * 100
 
@@ -107,7 +107,7 @@ class FuturesCTP(BaseEnv):
         return self._unsqueeze_tensor(state)
 
     def render(self):
-        _actions = self.account.actions
+        _actions = self.account.actions_real
         _fund_totals = self.account.fund_totals
         _klines = self.train_data.klines
         # self.render_klines_and_funds(_actions, _fund_totals, _klines)
@@ -132,7 +132,7 @@ class FuturesCTP(BaseEnv):
 
     def render_actions_and_funds(self, _actions, _fund_totals, _klines):
         partial = len(_actions)
-        action = [[], []]
+        actions = [[], []]
         fund_totals_step = [[], []]
         action_long = [[], []]
         action_short = [[], []]
@@ -140,8 +140,8 @@ class FuturesCTP(BaseEnv):
         time = range(partial)
         for i in time:
             if i == 0 or _actions[i-1] != _actions[i]:
-                action[0].append(i)
-                action[1].append(_klines[i]['close'])
+                actions[0].append(i)
+                actions[1].append(_klines[i]['close'])
                 fund_totals_step[0].append(i)
                 fund_totals_step[1].append(_fund_totals[i])
                 if ActionTable[_actions[i]].posi == 'L':
@@ -164,8 +164,8 @@ class FuturesCTP(BaseEnv):
             'title': 'action',
             'xlabel': 'time',
             'ylabel': ['action', 'fund_totals_step'],
-            'x_data': [action[0], fund_totals_step[0]],
-            'y_data': [action[1], fund_totals_step[1]],
+            'x_data': [actions[0], fund_totals_step[0]],
+            'y_data': [actions[1], fund_totals_step[1]],
         })
         self.__action_long_pc = self.plotter.plot_scatter({
             'id': 'action',

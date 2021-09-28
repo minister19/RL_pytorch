@@ -62,6 +62,8 @@
 - Update policy_net if reaches high score. Reason: verified with cart_pole, and be aware of overfitting.
 - Compare RMSprop and AdamW. Reason: continue using RMSprop, and AdamW behaves anti-optimization.
 - Be aware if training more than enough times, model is overfitting (loss explodes or fluctuates).
+- Policy net grad data clamp.
+- Nematode bias disable.
 
 ### Archived ideas
 
@@ -90,4 +92,5 @@
 2. Network 最后输出一个浮点数，作为开仓方向可信度？
 3. network params clip，取消 offset（bias=False）。
 4. Sig 的符号是否应该与 Kline 趋势一致，即与收益正负符号一致。
-5. Position margin 而不是 action margin，以及 withdraw，作为 model input？
+5. Sig 的符号是否应该同向过零重置？Margin 重置，Withdraw 不重置。
+6. Position margin 而不是 action margin，以及 withdraw，作为 model input？

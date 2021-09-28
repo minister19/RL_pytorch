@@ -144,17 +144,18 @@ class BacktestData:
 
     @property
     def indicators(self):
-        return (self.emas_trend,
-                self.emas_support,
-                self.qianlon_sign,
-                self.qianlon_vel_sign,
-                self.boll_sig,
-                self.period_sig,
-                self.rsi_sig,
-                self.rsv_trend,
-                self.rsv_sig,
-                self.withdraw_sig
-                )
+        return (
+            self.emas_trend,
+            self.emas_support,
+            self.qianlon_sign,
+            self.qianlon_vel_sign,
+            self.boll_sig,
+            self.period_sig,
+            self.rsi_sig,
+            self.rsv_trend,
+            self.rsv_sig,
+            self.withdraw_sig
+        )
 
     @property
     def states_dim(self):
