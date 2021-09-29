@@ -94,3 +94,4 @@
 4. Sig 的符号是否应该与 Kline 趋势一致，即与收益正负符号一致。
 5. Sig 的符号是否应该同向过零重置？Margin 重置，Withdraw 不重置。
 6. Position margin 而不是 action margin，以及 withdraw，作为 model input？
+7. single output node，根据浮点输出分层，进行仓位操作
