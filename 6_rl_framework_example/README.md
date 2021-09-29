@@ -85,13 +85,14 @@
 4. LSTM 模型做状态解析（利用它可以分析一段数据的特点），Q learning，训练出无监督状态-决策模型。Same idea on line: https://medium.com/@Lidinwise/trading-through-reinforcement-learning-using-lstm-neural-networks-6ffbb1f5e4a5
 5. Consider margin as stepped ones, rather than decimal ones.
 6. early_done algorithm，作为通用人工智能模型的一个特性。
+7. 研究模型输出维度与网络维度的关系。
 
 ### TODO:
 
-1. 可能是维度问题，action 有几个，对应几个维度。我的模型是否具有这么高的维度。
-2. Network 最后输出一个浮点数，作为开仓方向可信度？
-3. network params clip，取消 offset（bias=False）。
-4. Sig 的符号是否应该与 Kline 趋势一致，即与收益正负符号一致。
-5. Sig 的符号是否应该同向过零重置？Margin 重置，Withdraw 不重置。
-6. Position margin 而不是 action margin，以及 withdraw，作为 model input？
-7. single output node，根据浮点输出分层，进行仓位操作
+1. Sig sign 为 -1 时，withdraw 计算错误。
+2. 打印 100 次训练时，整个 episode 对应的 model input，model output 值，进行数值分析，比如符号，大小。
+3. Sig 的符号是否应该与 Kline 趋势一致，即与收益正负符号一致。
+4. Sig 的符号是否应该同向过零重置？Margin 重置，Withdraw 不重置。
+5. Position margin 而不是 action margin，以及 withdraw，作为 model input？
+6. Network 最后输出一个浮点数，作为开仓方向可信度？
+7. single output node，根据浮点输出分层，进行仓位操作。
