@@ -80,10 +80,8 @@ class DQNAgentExt(DQNAgent):
 
             # action same as previous, cache state to update reward
             if not self.config.env.account.transits:
-                # for (s, a, r, n) in cache:
-                if len(cache) >= 1:
-                    (s, a, r, n) = cache[0]
-                    r += self.config.env.account.nominal_margin * 10
+                for (s, a, r, n) in cache:
+                    r += reward
                 cache.append((state, action, reward, next_state))
             # action transits, store transition
             else:
@@ -121,7 +119,7 @@ class DQNAgentExt(DQNAgent):
         for i_episode in range(self.config.episodes):
             policy_net_bak = self.policy_net.state_dict()
 
-            self.episode_learn(i_episode)
+            self.episode_learn_accumulated_reward(i_episode)
             if len(self.fund_totals) >= 2 and self.fund_totals[-2] > self.fund_totals[-1]:
                 self.policy_net.load_state_dict(policy_net_bak)
             if i_episode % self.config.TUF == 0:

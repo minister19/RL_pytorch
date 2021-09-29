@@ -86,7 +86,7 @@ class FuturesCTP(BaseEnv):
         if not self.account.transits:
             reward = (self.account.nominal_margin + Account.TRADE_FEE) * 100
         else:
-            reward = (self.account.nominal_margin + self.account.action_penalty) * 100
+            reward = (self.account.nominal_margin - self.account.action_penalty) * 100
 
         # 5. test if done
         if self.account.terminated or self.train_data.terminated:

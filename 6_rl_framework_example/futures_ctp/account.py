@@ -13,13 +13,13 @@ ActionTable = [
     # Action('S', 0.5),
     Action('S', 1.0),
     # Action('N', None),
-    Action('U', None),
+    # Action('U', None),
 ]
 
 
 class Account:
     TRADE_FEE = 0.001
-    ACTION_PENALTY = -10
+    ACTION_PENALTY_RATIO = 10
 
     def __init__(self):
         self.actions_dim = len(ActionTable)
@@ -105,7 +105,7 @@ class Account:
 
     @property
     def action_penalty(self):
-        return self.trade_fee * Account.ACTION_PENALTY
+        return self.trade_fee * Account.ACTION_PENALTY_RATIO
 
     @property
     def nominal_posi(self):

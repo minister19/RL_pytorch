@@ -43,8 +43,8 @@ class BacktestData:
 
     def __init__(self) -> None:
         self.i = BacktestData.SKIPPED  # ema_3 requires to skip 5*6*2=60 klines
-        self.__states = []
-        self.__klines = []
+        self._states = []
+        self._klines = []
         self.emas_trend = SingleIndicator()
         self.emas_support = SingleIndicator()
         self.qianlon_sign = SingleIndicator()
@@ -68,7 +68,7 @@ class BacktestData:
 
             for i in range(len(klines)):
                 klines[i]['id'] -= 8*60*60
-            self.__klines = klines
+            self._klines = klines
 
             await websocket.send('indic_'+BacktestData.FREQ+'_'+str(BacktestData.COUNT)+'_history')
             msg2 = await websocket.recv()
@@ -115,9 +115,9 @@ class BacktestData:
         self.__preprocess()
 
     def __preprocess(self):
-        self.__states.clear()
+        self._states.clear()
         for i in range(BacktestData.COUNT):
-            kline = self.__klines[i]
+            kline = self._klines[i]
             states = []
             states.append(kline)
             for indic in self.indicators:
@@ -134,7 +134,7 @@ class BacktestData:
                     new_cost = kline['close']
                 feedback = indic.forward(i, kline['close'], new_cost)
                 states.extend(feedback)
-            self.__states.append(states)
+            self._states.append(states)
 
     def reset(self):
         self.i = BacktestData.SKIPPED
@@ -163,7 +163,7 @@ class BacktestData:
 
     @property
     def states(self):
-        return self.__states[self.i]
+        return self._states[self.i]
 
     @property
     def terminated(self):
@@ -171,7 +171,7 @@ class BacktestData:
 
     @property
     def klines(self):
-        return self.__klines[BacktestData.SKIPPED:]
+        return self._klines[BacktestData.SKIPPED:]
 
 
 if __name__ == '__main__':
@@ -179,21 +179,21 @@ if __name__ == '__main__':
     bd = BacktestData()
     asyncio.run(bd.sync())
     for i in range(BacktestData.COUNT):
-        x = bd.__states[i][0]
-        print(f'{datetime.fromtimestamp(x["id"], tz=None)}, {x["close"]}', end='\n')
+        x = bd._states[i][0]
+        print(f'{datetime.fromtimestamp(x["id"], tz=None)}, {x["close"]}', end='\t')
 
-        x = bd.__states[i][1:]
+        x = bd._states[i][1:]
         print(f'e_trend {x[0]}, {x[1]:.2f}, {x[2]:.2f}', end='\t')
         print(f'e_support {x[3]}, {x[4]:.2f}, {x[5]:.2f}', end='\n')
 
-        print(f'q_sign {x[6]}, {x[7]:.2f}, {x[8]:.2f}', end='\t')
-        print(f'q_vel_sign {x[9]}, {x[10]:.2f}, {x[11]:.2f}', end='\n')
+        # print(f'q_sign {x[6]}, {x[7]:.2f}, {x[8]:.2f}', end='\t')
+        # print(f'q_vel_sign {x[9]}, {x[10]:.2f}, {x[11]:.2f}', end='\n')
 
-        print(f'boll_sig {x[12]}, {x[13]:.2f}, {x[14]:.2f}', end='\t')
-        print(f'period_sig {x[15]}, {x[16]:.2f}, {x[17]:.2f}', end='\t')
-        print(f'rsi_sig {x[18]}, {x[19]:.2f}, {x[20]:.2f}', end='\n')
+        # print(f'boll_sig {x[12]}, {x[13]:.2f}, {x[14]:.2f}', end='\t')
+        # print(f'period_sig {x[15]}, {x[16]:.2f}, {x[17]:.2f}', end='\t')
+        # print(f'rsi_sig {x[18]}, {x[19]:.2f}, {x[20]:.2f}', end='\n')
 
-        print(f'rsv_trend {x[21]}, {x[21]:.2f}, {x[22]:.2f}', end='\t')
-        print(f'rsv_sig {x[24]}, {x[25]:.2f}, {x[26]:.2f}', end='\n')
+        # print(f'rsv_trend {x[21]}, {x[21]:.2f}, {x[22]:.2f}', end='\t')
+        # print(f'rsv_sig {x[24]}, {x[25]:.2f}, {x[26]:.2f}', end='\n')
 
-        print(f'withdraw {x[27]}, {x[28]:.2f}, {x[29]:.2f}', end='\n')
+        # print(f'withdraw {x[27]}, {x[28]:.2f}, {x[29]:.2f}', end='\n')
