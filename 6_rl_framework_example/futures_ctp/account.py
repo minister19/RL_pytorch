@@ -27,7 +27,7 @@ class Account:
 
     def reset(self):
         self.trade_fee = 0
-        self.transits = True
+        self.action_transits = True
         self.fund_total = 1.0
         self.posi = 'N'
         self.vol = 0  # vol is modeled as percentage rather than real vol
@@ -48,7 +48,7 @@ class Account:
         action = ActionTable[_action]
         if action.posi == 'N':  # 全平
             self.__close(self.vol)
-        elif action.posi == 'U':  # 观望
+        elif action.posi == 'U':  # 持仓观望
             if len(self.actions) >= 1:
                 _action_real = self.actions_real[-1]
         elif action.posi == self.posi:  # 增减仓
@@ -64,9 +64,10 @@ class Account:
         self.actions.append(_action)
         self.actions_real.append(_action_real)
 
-        self.transits = True
-        if len(self.actions_real) <= 1 or self.actions_real[-2] == self.actions_real[-1]:
-            self.transits = False
+        if action.posi in ['N', 'U']:
+            self.action_transits = False
+        else:
+            self.action_transits = True
 
     def update_margin(self, price: float):
         if self.pre_cost:
@@ -137,15 +138,9 @@ if __name__ == '__main__':
     from numpy import random
     x = random.randint(100, 200)
 
-    for i in range(5):
-        ac.take_action(i, x)
-        print(f'posi: {ac.nominal_posi}, close: {x}, av_cost: {ac.av_cost}', end=' ')
-        x = random.randint(100, 200)
-        ac.update_margin(x)
-        print(f'close: {x}, fund: {round(ac.fund_total, 2)}')
-
-        ac.take_action(5, x)
-        print(f'posi: {ac.nominal_posi}, close: {x}, av_cost: {ac.av_cost}', end=' ')
+    for idx, val in enumerate(ActionTable):
+        ac.take_action(idx, x)
+        print(f'posi: {ac.nominal_posi}, close: {x}, av_cost: {ac.avg_cost}', end=' ')
         x = random.randint(100, 200)
         ac.update_margin(x)
         print(f'close: {x}, fund: {round(ac.fund_total, 2)}')

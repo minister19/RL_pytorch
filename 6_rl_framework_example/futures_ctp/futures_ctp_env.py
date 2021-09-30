@@ -83,7 +83,7 @@ class FuturesCTP(BaseEnv):
         next_state = self.__get_state()
 
         # 4. update reward basing on next state
-        if not self.account.transits:
+        if not self.account.action_transits:
             reward = (self.account.nominal_margin + Account.TRADE_FEE) * 100
         else:
             reward = (self.account.nominal_margin - self.account.action_penalty) * 100

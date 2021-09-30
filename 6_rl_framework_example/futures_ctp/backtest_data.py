@@ -32,7 +32,8 @@ class SingleIndicator:
                 self.feedback_cost = new_cost
             _margin = 0
             _withdraw = 0
-        return [_margin, _withdraw]
+        return [_margin]
+        # return [_margin, _withdraw]
 
 
 class BacktestData:
@@ -159,7 +160,7 @@ class BacktestData:
 
     @property
     def states_dim(self):
-        return len(self.indicators)*3
+        return len(self.indicators)*2
 
     @property
     def states(self):
