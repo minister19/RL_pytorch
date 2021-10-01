@@ -13,6 +13,7 @@ This repo records Shuang Gao's AI learning progress.
 2021-09-24 Shawn: ask for leave. Play Dota2.
 2021-09-25 Shawn: ask for leave. Take a rest.
 2021-09-25 Shawn: ask for leave. Play SC2.
+2021-09-25 Shawn: ask for leave. Play Dyson Sphere Program.
 
 # TODO
 
