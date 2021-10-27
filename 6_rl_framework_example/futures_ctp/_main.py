@@ -1,7 +1,7 @@
 import math
 import torch
 from rl_m19.config import Config
-from rl_m19.network import ReplayMemory, Nematode
+from rl_m19.network import Nematode
 from rl_m19.utils import Logger, Plotter
 from dqn_agent_ext import DQNAgentExt
 from futures_ctp_env import FuturesCTP, BacktestData
@@ -24,7 +24,6 @@ config.env = FuturesCTP(config.device, config.plotter)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
-config.memory = ReplayMemory(config.MC)
 config.policy_net = Nematode(config)
 config.target_net = Nematode(config)
 config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)

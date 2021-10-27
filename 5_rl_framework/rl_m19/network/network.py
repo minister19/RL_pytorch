@@ -69,7 +69,7 @@ class Nematode(BaseNetwork):
         self.to(config.device)
 
     def forward(self, x: Tensor):
-        x = torch.sigmoid(self.fc1(x))
+        x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
 

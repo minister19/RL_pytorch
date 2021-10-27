@@ -13,6 +13,7 @@ class Config:
         self.plotter = None
         self.device = None
         self.env = None
+        self.test_env = None
         self.states_dim = None
         self.actions_dim = None
 
@@ -20,7 +21,6 @@ class Config:
         self.cnn_image_width = 0
         self.cnn_image_height = 0
 
-        self.memory = None
         self.policy_net = None
         self.target_net = None
         self.optimizer = None

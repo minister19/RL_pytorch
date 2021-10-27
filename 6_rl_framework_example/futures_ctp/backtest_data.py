@@ -37,7 +37,7 @@ class SingleIndicator:
 
 
 class BacktestData:
-    FREQ = '15min'
+    FREQ = '60min'
     COUNT = 1060
     SKIPPED = 60
     TRAINED = COUNT - SKIPPED
@@ -100,9 +100,9 @@ class BacktestData:
 
                 if i == 0:
                     sig = 0
-                elif rsv_m[i-1] < 5.0 and rsv_m[i] >= 5.0:
+                elif rsv_m[i-1] < 5.0 and rsv_m[i] >= 5.0 or rsv_m[i-1] < 95.0 and rsv_m[i] >= 95.0:
                     sig = -1
-                elif rsv_m[i-1] > 95.0 and rsv_m[i] <= 95.0:
+                elif rsv_m[i-1] > 95.0 and rsv_m[i] <= 95.0 or rsv_m[i-1] > 5.0 and rsv_m[i] <= 5.0:
                     sig = 1
                 else:
                     sig = 0

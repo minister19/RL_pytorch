@@ -93,7 +93,8 @@ class Plotter():
             xlabel: '',
             ylabel: [''],
             x_data: [[]],
-            y_data: [[]]
+            y_data: [[]],
+            color: ['']
         }
         '''
         fig = plt.figure(config['id'])
@@ -106,7 +107,8 @@ class Plotter():
                     plt.plot(
                         config['x_data'][i],
                         config['y_data'][i],
-                        label=config['ylabel'][i])
+                        label=config['ylabel'][i],
+                        color=config['color'][i])
                     axes = fig.get_axes()
                     ax = axes[0]
                 else:
@@ -117,7 +119,8 @@ class Plotter():
                     twin.plot(
                         config['x_data'][i],
                         config['y_data'][i],
-                        label=config['ylabel'][i])
+                        label=config['ylabel'][i],
+                        color=config['color'][i])
         else:
             for i in range(len(config['ylabel'])):
                 ax = axes[i]
@@ -212,6 +215,7 @@ if __name__ == '__main__':
         'ylabel': ['l1', 'l2'],
         'x_data': [range(4), range(5)],
         'y_data': [[1, 2, 3, 4], [1, 2, 3, 5, 8]],
+        'color': ['blue', 'red'],
     })
     plt.pause(1)
     p.plot_multiple({
@@ -221,5 +225,6 @@ if __name__ == '__main__':
         'ylabel': ['l1', 'l2'],
         'x_data': [range(5), range(6)],
         'y_data': [[1, 2, 3, 4, 5], [1, 2, 3, 5, 8, 13]],
+        'color': ['blue', 'red'],
     })
     plt.show(block=True)

@@ -56,9 +56,7 @@ class FuturesCTP(BaseEnv):
         self.account = Account()
         self.train_data = BacktestData()
         asyncio.run(self.train_data.sync())
-        self.test_data = BacktestData()
-        asyncio.run(self.test_data.sync())
-        self.states_dim = self.train_data.states_dim
+        self.states_dim = self.account.states_dim + self.train_data.states_dim
         self.actions_dim = self.account.actions_dim
         self.steps = 0
         self.__action_long_pc = None
@@ -66,7 +64,9 @@ class FuturesCTP(BaseEnv):
         self.__action_neutral_pc = None
 
     def __get_state(self):
-        return copy.copy(self.train_data.states[1:])
+        s1 = copy.copy(self.account.states[1:])
+        s2 = copy.copy(self.train_data.states[1:])
+        return s1 + s2
 
     def step(self, action: int):
         self.steps += 1
@@ -111,7 +111,7 @@ class FuturesCTP(BaseEnv):
         _fund_totals = self.account.fund_totals
         _klines = self.train_data.klines
         # self.render_klines_and_funds(_actions, _fund_totals, _klines)
-        self.render_actions_and_funds(_actions, _fund_totals, _klines)
+        # self.render_actions_and_funds(_actions, _fund_totals, _klines)
 
     def render_klines_and_funds(self, _actions, _fund_totals, _klines):
         partial = len(_actions)
@@ -127,6 +127,7 @@ class FuturesCTP(BaseEnv):
             'ylabel': ['close', 'fund_total'],
             'x_data': [time, time],
             'y_data': [close, fund_totals],
+            'color': ['blue', 'red'],
         })
         return
 
@@ -166,6 +167,7 @@ class FuturesCTP(BaseEnv):
             'ylabel': ['action', 'fund_totals_step'],
             'x_data': [actions[0], fund_totals_step[0]],
             'y_data': [actions[1], fund_totals_step[1]],
+            'color': ['blue', 'red'],
         })
         self.__action_long_pc = self.plotter.plot_scatter({
             'id': 'action',

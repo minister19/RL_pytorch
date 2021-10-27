@@ -12,9 +12,9 @@ This repo records Shuang Gao's AI learning progress.
 2021-09-22 Shawn: ask for leave. Illness recovery.
 2021-09-24 Shawn: ask for leave. Play Dota2.
 2021-09-25 Shawn: ask for leave. Take a rest.
-2021-09-25 Shawn: ask for leave. Play SC2.
-2021-09-25 Shawn: ask for leave. Play Dyson Sphere Program.
-2021-09-25 Shawn: ask for leave. Attend Leo's wedding.
+2021-09-30 Shawn: ask for leave. Play SC2.
+2021-10-01 Shawn: ask for leave. Play Dyson Sphere Program.
+2021-10-02 Shawn: ask for leave. Attend Leo's wedding.
 
 # TODO
 
@@ -26,3 +26,8 @@ This repo records Shuang Gao's AI learning progress.
 5. 一个神经网络不一定要解决一个问题的所有方面，它也可以只解决一个问题的部分方面，或者只解决某个维度？比如三维问题只解决其中一维？
 6. action_transits_quota algorithm for Generic AI.
 7. 研究模型输出维度与网络维度的关系。
+8. Find the relationships:
+   eps decay - memory capacity
+   batch size - memory capacity
+   eps decay - data trained
+   batch size - data trained

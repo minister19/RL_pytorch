@@ -31,5 +31,9 @@ class ReplayMemory():
         batch = Transition(*zip(*transitions))
         return batch
 
+    def clear(self):
+        self.memory.clear()
+        self.position = 0
+
     def __len__(self):
         return len(self.memory)

@@ -2,7 +2,7 @@ import math
 import torch
 from rl_m19.config import Config
 from rl_m19.agent import QLearningAgent, SarsaAgent
-from rl_m19.network import ReplayMemory, PureLinear
+from rl_m19.network import PureLinear
 from rl_m19.utils import Plotter
 from maze_1d import OneDimensionMaze
 
@@ -23,7 +23,6 @@ config.env = OneDimensionMaze(config.device)
 config.states_dim = config.env.states_dim
 config.actions_dim = config.env.actions_dim
 
-config.memory = ReplayMemory(config.MC)
 config.policy_net = PureLinear(config)
 config.target_net = PureLinear(config)
 config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)

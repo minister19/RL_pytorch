@@ -1,13 +1,22 @@
 import torch
 import random
 from itertools import count
+from numpy import average
+from rl_m19.network import ReplayMemory
 from .base_agent import BaseAgent, AgentUtils
 
 
 class DQNAgent(BaseAgent):
     def __init__(self, config):
         super().__init__(config)
-        self.memory = config.memory
+        self.train_memory = ReplayMemory(config.MC)
+        self.train_loss = []
+        self.train_losses = []
+
+        self.test_memory = ReplayMemory(config.MC)
+        self.test_loss = []
+        self.test_losses = []
+
         self.select_action_counter = 0
 
     def select_action(self, state):
@@ -23,9 +32,9 @@ class DQNAgent(BaseAgent):
             action = random.randrange(self.config.actions_dim)
         return torch.tensor([[action]], device=self.config.device, dtype=torch.long)
 
-    def sample_minibatch(self):
+    def sample_minibatch(self, memory: ReplayMemory):
         # sample batch
-        batch = self.memory.sample2Batch(self.config.BATCH_SIZE)
+        batch = memory.sample2Batch(self.config.BATCH_SIZE)
         state_batch = torch.cat(batch.state)
         action_batch = torch.cat(batch.action)
         reward_batch = torch.cat(batch.reward)
@@ -57,10 +66,13 @@ class DQNAgent(BaseAgent):
         self.optimizer.step()
         return loss.item()
 
-    def episode_learn(self, i_episode):
+    def episode_learn(self, i_episode, step_render=True):
         state = self.config.env.reset()
 
         for t in count():
+            if step_render:
+                self.config.env.render()
+
             # choose action
             action = self.select_action(state)
 
@@ -68,30 +80,81 @@ class DQNAgent(BaseAgent):
             next_state, reward, done, info = self.config.env.step(action.item())
 
             # store transition
-            self.memory.push(state, action, reward, next_state)
+            self.train_memory.push(state, action, reward, next_state)
 
-            if len(self.memory) >= self.config.BATCH_SIZE:
+            if len(self.train_memory) >= self.config.BATCH_SIZE:
                 # sample minibatch
-                q_eval, q_target = self.sample_minibatch()
+                q_eval, q_target = self.sample_minibatch(self.train_memory)
 
                 # gradient descent
                 loss = self.gradient_descent(q_eval, q_target)
+                self.train_loss.append(loss)
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                self.config.plotter.plot_single_with_mean({
-                    'id': 1,
-                    'title': 'episode_t',
-                    'xlabel': 'iteration',
-                    'ylabel': 'lifespan',
-                    'x_data': range(len(self.episode_t)),
-                    'y_data': self.episode_t,
-                    'm': 100
-                })
+                avg_loss = average(self.train_loss) if len(self.train_loss) > 0 else None
+                self.train_losses.append(avg_loss)
+                self.train_loss.clear()
                 break
             else:
                 # update state
                 state = next_state
+
+    def episode_test(self, i_episode, step_render=True):
+        state = self.config.test_env.reset()
+
+        for t in count():
+            if step_render:
+                self.config.test_env.render()
+
+            # choose action
+            action = self.select_action(state)
+
+            # take action and observe
+            next_state, reward, done, info = self.config.test_env.step(action.item())
+
+            # store transition
+            self.test_memory.push(state, action, reward, next_state)
+
+            if len(self.test_memory) >= self.config.BATCH_SIZE:
+                # sample minibatch
+                q_eval, q_target = self.sample_minibatch(self.test_memory)
+
+                # compute loss
+                loss_t = self.loss_fn(q_eval, q_target)
+                loss = loss_t.item()
+                self.test_loss.append(loss)
+
+            if done or t >= self.config.episode_lifespan:
+                self.test_memory.clear()
+                avg_loss = average(self.test_loss) if len(self.test_loss) > 0 else None
+                self.test_losses.append(avg_loss)
+                self.test_loss.clear()
+                break
+            else:
+                # update state
+                state = next_state
+
+    def on_episode_done(self):
+        self.config.plotter.plot_single_with_mean({
+            'id': 1,
+            'title': 'episode_t',
+            'xlabel': 'iteration',
+            'ylabel': 'lifespan',
+            'x_data': range(len(self.episode_t)),
+            'y_data': self.episode_t,
+            'm': 100
+        })
+
+        self.config.plotter.plot_multiple({
+            'id': 'loss',
+            'title': 'loss',
+            'xlabel': 'step',
+            'ylabel': ['train_loss', 'test_loss'],
+            'x_data': [range(len(self.train_losses)), range(len(self.test_losses))],
+            'y_data': [self.train_losses, self.test_losses],
+            'color': ['blue', 'red'],
+        })
 
     def episodes_learn(self):
         for i_episode in range(self.config.episodes):
@@ -99,3 +162,7 @@ class DQNAgent(BaseAgent):
             if i_episode % self.config.TUF == 0:
                 # update memory
                 self.target_net.load_state_dict(self.policy_net.state_dict())
+
+            self.episode_test(i_episode)
+
+            self.on_episode_done()
