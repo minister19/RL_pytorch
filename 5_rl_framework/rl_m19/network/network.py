@@ -74,6 +74,42 @@ class Nematode(BaseNetwork):
         return x
 
 
+class ActorCritic(BaseNetwork):
+    def __init__(self, config: Config):
+        super().__init__('ActorCritic')
+        self.hidden = config.states_dim // 2
+        self.affine1 = nn.Linear(config.states_dim, self.hidden)
+
+        # actor's layer
+        self.action_head = nn.Linear(self.hidden, config.actions_dim)
+
+        # critic's layer
+        self.value_head = nn.Linear(self.hidden, 1)
+
+        # action & reward buffer
+        self.saved_actions = []
+        self.rewards = []
+        # self.to(config.device)
+
+    def forward(self, x):
+        """
+        forward of both actor and critic
+        """
+        x = F.relu(self.affine1(x))
+
+        # actor: choses action to take from state s_t
+        # by returning probability of each action
+        action_prob = F.softmax(self.action_head(x), dim=-1)
+
+        # critic: evaluates being in the state s_t
+        state_values = self.value_head(x)
+
+        # return values for both actor and critic as a tuple of 2 values:
+        # 1. a list with the probability of each action over the action space
+        # 2. the value from state s_t
+        return action_prob, state_values
+
+
 if __name__ == '__main__':
     config = Config()
     config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
