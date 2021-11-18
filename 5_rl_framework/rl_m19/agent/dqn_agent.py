@@ -1,14 +1,21 @@
+import numpy as np
 import torch
-import random
 from itertools import count
-from numpy import average
-from rl_m19.network import ReplayMemory
-from .base_agent import BaseAgent, AgentUtils
+from rl_m19.network.replay_memory import ReplayMemory
+from rl_m19.agent.base_agent import BaseAgent, AgentUtils
 
 
 class DQNAgent(BaseAgent):
     def __init__(self, config):
         super().__init__(config)
+        self.select_action_counter = 0
+
+        self.policy_net = config.policy_net
+        self.target_net = config.target_net
+        self.target_net.load_state_dict(self.policy_net.state_dict())
+        self.optimizer = config.optimizer
+        self.loss_fn = config.loss_fn
+
         self.train_memory = ReplayMemory(config.MC)
         self.train_loss = []
         self.train_losses = []
@@ -17,19 +24,17 @@ class DQNAgent(BaseAgent):
         self.test_loss = []
         self.test_losses = []
 
-        self.select_action_counter = 0
-
     def select_action(self, state):
-        sample = random.random()
+        sample = np.random.random()
         eps = self.eps_fn(self.select_action_counter)
         self.select_action_counter += 1
         if sample > eps:
             with torch.no_grad():
                 # t.max(1) will return largest column value of each row.
                 # t.argmax() will return largest value's index of t.
-                action = self.policy_net(state).argmax() % self.config.actions_dim
+                action = self.policy_net(state).argmax() % self.config.action_dim
         else:
-            action = random.randrange(self.config.actions_dim)
+            action = np.random.randint(0, self.config.action_dim)
         return torch.tensor([[action]], device=self.config.device, dtype=torch.long)
 
     def sample_minibatch(self, memory: ReplayMemory):
@@ -92,7 +97,7 @@ class DQNAgent(BaseAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                avg_loss = average(self.train_loss) if len(self.train_loss) > 0 else None
+                avg_loss = np.average(self.train_loss) if len(self.train_loss) > 0 else None
                 self.train_losses.append(avg_loss)
                 self.train_loss.clear()
                 break
@@ -127,7 +132,7 @@ class DQNAgent(BaseAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.test_memory.clear()
-                avg_loss = average(self.test_loss) if len(self.test_loss) > 0 else None
+                avg_loss = np.average(self.test_loss) if len(self.test_loss) > 0 else None
                 self.test_losses.append(avg_loss)
                 self.test_loss.clear()
                 break

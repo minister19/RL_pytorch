@@ -56,8 +56,8 @@ class FuturesCTP(BaseEnv):
         self.account = Account()
         self.train_data = BacktestData()
         asyncio.run(self.train_data.sync())
-        self.states_dim = self.account.states_dim + self.train_data.states_dim
-        self.actions_dim = self.account.actions_dim
+        self.state_dim = self.account.state_dim + self.train_data.state_dim
+        self.action_dim = self.account.action_dim
         self.steps = 0
         self.__action_long_pc = None
         self.__action_short_pc = None

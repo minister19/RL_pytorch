@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-import random
 from itertools import count
-from .q_learning_agent import AgentUtils, QLearningAgent
+from rl_m19.agent.q_learning_agent import QLearningAgent, AgentUtils
 
 
 class SarsaAgent(QLearningAgent):

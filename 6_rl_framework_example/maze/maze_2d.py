@@ -37,8 +37,8 @@ class TwoDimensionMaze(BaseEnv):
     def __init__(self, device, plotter=None) -> None:
         super().__init__(device, plotter)
         self.maze_length = 10  # .....x...., x is the position
-        self.states_dim = self.maze_length**2
-        self.actions_dim = 4  # move left/right/up/down
+        self.state_dim = self.maze_length**2
+        self.action_dim = 4  # move left/right/up/down
         self.posi_x = None
         self.posi_y = None
         self.steps = None

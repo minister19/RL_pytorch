@@ -1,14 +1,13 @@
 import numpy as np
 import pandas as pd
-import random
 from itertools import count
-from .base_agent import BaseAgent, AgentUtils
+from rl_m19.agent.base_agent import BaseAgent, AgentUtils
 
 
 class QLearningAgent(BaseAgent):
     def __init__(self, config):
         super().__init__(config)
-        self.actions = range(self.config.actions_dim)
+        self.actions = range(self.config.action_dim)
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float32)
         self.select_action_counter = 0
 
@@ -16,7 +15,7 @@ class QLearningAgent(BaseAgent):
         if state not in self.q_table.index:
             # append new state to q table
             new_state_row = pd.Series(
-                np.zeros(self.config.actions_dim),
+                np.zeros(self.config.action_dim),
                 index=self.actions,
                 name=state,
             )
@@ -29,16 +28,16 @@ class QLearningAgent(BaseAgent):
         # record unknown state
         self._check_state_exist(state)
 
-        sample = random.random()
+        sample = np.random.random()
         eps = self.eps_fn(self.select_action_counter)
         self.select_action_counter += 1
         if sample > eps:
             # some actions may have the same value, randomly choose on in these actions
             state_action = self.q_table.loc[state, :]
             best_actions = state_action[state_action == max(state_action)].index
-            action = random.choice(best_actions)
+            action = np.random.choice(best_actions)
         else:
-            action = random.choice(self.actions)
+            action = np.random.choice(self.actions)
         return action
 
     def learn(self, state, action, reward, next_state, next_action):

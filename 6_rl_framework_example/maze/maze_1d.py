@@ -34,8 +34,8 @@ class OneDimensionMaze(BaseEnv):
     def __init__(self, device, plotter=None) -> None:
         super().__init__(device, plotter)
         self.maze_length = 10  # .....x...., x is the position
-        self.states_dim = self.maze_length
-        self.actions_dim = 2  # move left, move right
+        self.state_dim = self.maze_length
+        self.action_dim = 2  # move left, move right
         self.posi = None
         self.steps = None
 

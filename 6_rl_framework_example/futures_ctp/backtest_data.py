@@ -159,7 +159,7 @@ class BacktestData:
         )
 
     @property
-    def states_dim(self):
+    def state_dim(self):
         return len(self.indicators)*2
 
     @property

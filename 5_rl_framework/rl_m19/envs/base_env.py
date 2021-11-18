@@ -6,8 +6,8 @@ class BaseEnv():
     def __init__(self, device, plotter: Plotter):
         self.device = device
         self.plotter = plotter
-        self.states_dim = None
-        self.actions_dim = None
+        self.state_dim = None
+        self.action_dim = None
 
     def _unsqueeze_tensor(self, x):
         x = torch.tensor(x, device=self.device, dtype=torch.float)

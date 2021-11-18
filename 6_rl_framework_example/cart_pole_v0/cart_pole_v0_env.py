@@ -47,8 +47,8 @@ class CartPole_v0(BaseEnv):
     def __init__(self, device, plotter=None):
         super().__init__(device, plotter)
         self.env = gym.make('CartPole-v0').unwrapped
-        self.states_dim = 4
-        self.actions_dim = 2
+        self.state_dim = 4
+        self.action_dim = 2
 
     def step(self, action):
         next_state, reward, done, info = self.env.step(action)

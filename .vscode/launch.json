@@ -5,16 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Solution",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceRoot}/6_rl_framework_example/futures_ctp/_main.py",
-            "cwd": "${workspaceRoot}",
-            "console": "integratedTerminal",
-            "args": [],
-            "python": "C:/Users/Shawn/source_github/huobi_futures_python/_env/Scripts/python.exe"
-        },
-        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

@@ -20,8 +20,8 @@ config.TUF = 10  # TARGET_UPDATE_FREQUENCY
 config.plotter = Plotter()
 config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 config.env = TwoDimensionMaze(config.device)
-config.states_dim = config.env.states_dim
-config.actions_dim = config.env.actions_dim
+config.state_dim = config.env.state_dim
+config.action_dim = config.env.action_dim
 
 config.policy_net = PureLinear(config)
 config.target_net = PureLinear(config)

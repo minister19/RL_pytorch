@@ -22,8 +22,8 @@ class Account:
     ACTION_PENALTY_RATIO = 10
 
     def __init__(self):
-        self.states_dim = 2
-        self.actions_dim = len(ActionTable)
+        self.state_dim = 2
+        self.action_dim = len(ActionTable)
         self.reset()
 
     def reset(self):

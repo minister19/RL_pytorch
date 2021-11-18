@@ -14,8 +14,8 @@ class Config:
         self.device = None
         self.env = None
         self.test_env = None
-        self.states_dim = None
-        self.actions_dim = None
+        self.state_dim = None
+        self.action_dim = None
 
         # CNN
         self.cnn_image_width = 0
