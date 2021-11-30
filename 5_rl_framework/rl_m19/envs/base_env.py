@@ -10,7 +10,7 @@ class BaseEnv():
         self.action_dim = None
 
     def _unsqueeze_tensor(self, x):
-        x = torch.tensor(x, device=self.device, dtype=torch.float)
+        x = torch.tensor(x, device=self.device, dtype=torch.float32)
         x = torch.unsqueeze(x, 0)
         return x
 

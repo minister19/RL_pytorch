@@ -33,7 +33,7 @@ class DQNAgentExt(DQNAgent):
     def episodes_learn(self):
         for i_episode in range(self.config.episodes):
             self.episode_learn(i_episode, False)
-            if i_episode % self.config.TUF == 0:
+            if i_episode % self.config.target_update_freq == 0:
                 # update memory
                 self.target_net.load_state_dict(self.policy_net.state_dict())
 

@@ -20,16 +20,19 @@ class SarsaAgent(QLearningAgent):
         q_predict = self.q_table.loc[state, action]
         if next_state != None:
             # next state is not terminal
-            q_target = reward + self.config.GAMMA * self.q_table.loc[next_state, next_action]
+            q_target = reward + self.config.gamma * self.q_table.loc[next_state, next_action]
         else:
             # next state is terminal
             q_target = reward
-        self.q_table.loc[state, action] += self.config.LR * (q_target - q_predict)
+        self.q_table.loc[state, action] += self.config.lr * (q_target - q_predict)
 
-    def episode_learn(self, i_episode):
+    def episode_learn(self, step_render=False):
         state = self.config.env.reset()
 
         for t in count():
+            if step_render:
+                self.config.env.render()
+
             # choose action
             action = self.select_action(state)
 
@@ -41,15 +44,6 @@ class SarsaAgent(QLearningAgent):
 
             if done or t >= self.config.episode_lifespan:
                 self.episode_t.append(t)
-                self.config.plotter.plot_single_with_mean({
-                    'id': 1,
-                    'title': 'episode_t',
-                    'xlabel': 'iteration',
-                    'ylabel': 'lifespan',
-                    'x_data': range(len(self.episode_t)),
-                    'y_data': self.episode_t,
-                    'm': 100
-                })
                 break
             else:
                 # learn

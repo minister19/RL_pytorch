@@ -15,15 +15,15 @@ Source:
 Observation:
     Type: Box(4)
     Num     Observation               Min                     Max
-    1       Cart Position             -4.8                    4.8
-    2       Cart Velocity             -Inf                    Inf
-    3       Pole Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
-    4       Pole Angular Velocity     -Inf                    Inf
+    0       Cart Position             -4.8                    4.8
+    1       Cart Velocity             -Inf                    Inf
+    2       Pole Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+    3       Pole Angular Velocity     -Inf                    Inf
 Actions:
     Type: Discrete(2)
     Num   Action
-    1     Push cart to the left
-    2     Push cart to the right
+    0     Push cart to the left
+    1     Push cart to the right
     Note: The amount the velocity that is reduced or increased is not
     fixed; it depends on the angle the pole is pointing. This is because
     the center of gravity of the pole increases the amount of energy needed
@@ -47,14 +47,16 @@ class CartPole_v0(BaseEnv):
     def __init__(self, device, plotter=None):
         super().__init__(device, plotter)
         self.env = gym.make('CartPole-v0').unwrapped
+        # self.env = gym.make('Pendulum-v1').unwrapped
         self.state_dim = 4
         self.action_dim = 2
 
     def step(self, action):
+        # next_state, reward, done, info = self.env.step([action])
         next_state, reward, done, info = self.env.step(action)
-        # reward = -10*abs(next_state[2])
-        reward = -10*abs(next_state[2]) - abs(next_state[0])
-        return self._unsqueeze_tensor(next_state), self._unsqueeze_tensor(reward), done, info
+        # reward = 1 - 10 * abs(next_state[2])/0.209
+        # reward = 1 - 10 * (abs(next_state[0])/2.4 + abs(next_state[2])/0.209)
+        return self._unsqueeze_tensor(next_state), reward, done, info
 
     def reset(self):
         state = self.env.reset()
@@ -64,5 +66,4 @@ class CartPole_v0(BaseEnv):
         return self.env.render()
 
     def close(self):
-        state = self.env.close()
-        return self._unsqueeze_tensor(state)
+        return self.env.close()

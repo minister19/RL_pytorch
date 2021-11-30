@@ -3,7 +3,7 @@ from collections import namedtuple
 
 
 Transition = namedtuple('Transition',
-                        ('state', 'action', 'reward', 'next_state'))
+                        ('state', 'action', 'reward', 'next_state', 'done'))
 
 
 class ReplayMemory():
@@ -20,11 +20,11 @@ class ReplayMemory():
         self.memory[self.position] = Transition(*args)
         self.position = (self.position + 1) % self.capacity
 
-    def sample2Transitions(self, batch_size):
+    def sample_transitions(self, batch_size):
         transitions = random.sample(self.memory, batch_size)
         return transitions
 
-    def sample2Batch(self, batch_size):
+    def sample_batch(self, batch_size):
         # Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for detailed explanation).
         # This converts batch-array of Transitions to Transition of batch-arrays.
         transitions = random.sample(self.memory, batch_size)

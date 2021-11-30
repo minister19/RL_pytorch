@@ -9,13 +9,13 @@ from futures_ctp_env import FuturesCTP, BacktestData
 config = Config()
 config.episode_lifespan = 10**4
 config.episodes = 10**4
-config.BATCH_SIZE = 64  # should be power of 2, e.g. 2^n
-config.GAMMA = 0.999
-# config.EPS_fn = lambda s: 0.9
-config.EPS_fn = lambda s: 0.05 + (0.90 - 0.05) * math.exp(-1. * s / BacktestData.TRAINED)
-config.LR = 0.01  # LEARNING_RATE
-config.MC = BacktestData.TRAINED  # MEMORY_CAPACITY
-config.TUF = 5  # TARGET_UPDATE_FREQUENCY
+config.batch_size = 64  # should be power of 2, e.g. 2^n
+config.gamma = 0.999
+# config.eps_fn = lambda s: 0.9
+config.eps_fn = lambda s: 0.05 + (0.90 - 0.05) * math.exp(-1. * s / BacktestData.TRAINED)
+config.lr = 0.01
+config.replay_size = BacktestData.TRAINED
+config.target_update_freq = 5
 
 config.logger = Logger()
 config.plotter = Plotter()
@@ -26,7 +26,7 @@ config.action_dim = config.env.action_dim
 
 config.policy_net = Nematode(config)
 config.target_net = Nematode(config)
-config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.LR)
+config.optimizer = torch.optim.RMSprop(config.policy_net.parameters(), config.lr)
 config.loss_fn = torch.nn.MSELoss()
 
 if __name__ == '__main__':

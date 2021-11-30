@@ -21,5 +21,5 @@ h2 = F.relu((h1 @ W2) + B2)
 output = torch.sigmoid((h2 @ W3) + B3)
 
 # print graphic model architecture
-dot = make_dot(output.mean(), params=dict(output.named_parameters()), show_attrs=True, show_saved=True)
+dot = make_dot(output.mean(), show_attrs=True, show_saved=True)
 dot.render('data/round-table.gv', view=True)

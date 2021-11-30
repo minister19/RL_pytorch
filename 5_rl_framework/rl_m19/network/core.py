@@ -11,6 +11,8 @@ def combined_shape(length, shape=None):
 def mlp(sizes, bias=True, activation=nn.ReLU, output_activation=nn.Identity):
     '''
     Multilayer Perceptron (MLP)
+    2021-11-15 Shawn: one can use output_activation=nn.Tanh and act_limit to control action space.
+    2021-11-21 Shawn: well I believe this suits symmetric continuous control problem.
     '''
     layers = []
     layers_count = len(sizes) - 1

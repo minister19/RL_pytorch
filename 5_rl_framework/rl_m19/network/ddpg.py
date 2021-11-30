@@ -17,7 +17,7 @@ class ReplayBuffer:
         self.done_buf = np.zeros(size, dtype=np.float32)
         self.ptr, self.size, self.max_size = 0, 0, size
 
-    def store(self, obs, act, rew, next_obs, done):
+    def push(self, obs, act, rew, next_obs, done):
         self.obs_buf[self.ptr] = obs
         self.obs2_buf[self.ptr] = next_obs
         self.act_buf[self.ptr] = act
@@ -37,14 +37,10 @@ class ReplayBuffer:
 
 
 class Actor(nn.Module):
-    '''
-    2021-11-15 Shawn: one can use output_activation=nn.Tanh and act_limit to control action space.
-    '''
-
     def __init__(self, obs_dim, act_dim, hidden_sizes, device=None):
         super().__init__()
         pi_sizes = [obs_dim] + list(hidden_sizes) + [act_dim]
-        self.pi = core.mlp(pi_sizes, bias=False)
+        self.pi = core.mlp(pi_sizes, bias=False, activation=nn.ReLU, output_activation=nn.Tanh)
         self.to(device)
 
     def forward(self, obs):
@@ -55,21 +51,17 @@ class QFunction(nn.Module):
     def __init__(self, obs_dim, act_dim, hidden_sizes, device=None):
         super().__init__()
         q_sizes = [obs_dim + act_dim] + list(hidden_sizes) + [1]
-        self.q = core.mlp(q_sizes, bias=False)
+        self.q = core.mlp(q_sizes, bias=False, activation=nn.ReLU, output_activation=nn.Identity)
         self.to(device)
 
     def forward(self, obs, act):
-        q = self.q(torch.cat([obs, act], dim=-1))
+        q = self.q(torch.cat([obs, act], dim=1))
         return torch.squeeze(q, -1)  # Critical to ensure q has right shape.
 
 
 class DDPGActorCritic(nn.Module):
-    def __init__(self, observation_space, action_space, hidden_sizes=(256, 256), device=None):
+    def __init__(self, obs_dim, act_dim, hidden_sizes=(256, 256), device=None):
         super().__init__()
-        obs_dim = observation_space.shape[0]
-        act_dim = action_space.shape[0]
-
-        # build policy and value functions
         self.pi = Actor(obs_dim, act_dim, hidden_sizes, device)
         self.q = QFunction(obs_dim, act_dim, hidden_sizes, device)
         self.to(device)
@@ -83,11 +75,10 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     state_dim = 21
-    action_dim = 3
-    observation_space = torch.rand(state_dim)
-    action_space = torch.rand(action_dim)
-    ddpg = DDPGActorCritic(observation_space, action_space, device=device)
+    action_dim = 2
+    ddpg = DDPGActorCritic(state_dim, action_dim, (state_dim//2, ), device=device)
     x = torch.rand((1, state_dim), device=device)
+    print(x)
     y = ddpg.act(x)
     print(y)
     z = y.cpu().numpy()
