@@ -38,7 +38,7 @@ class DQNAgent(BaseAgent):
         batch = self.memory.sample_batch(self.config.batch_size)
         state_batch = torch.cat(batch.state)
         action_batch = torch.cat(batch.action)
-        reward_batch = torch.cat(batch.reward)
+        reward_batch = torch.tensor(batch.reward, device=self.config.device)
 
         # evaluation value
         q_eval = self.policy_net(state_batch).gather(1, action_batch)

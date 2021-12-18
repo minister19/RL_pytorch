@@ -26,7 +26,7 @@ class SarsaAgent(QLearningAgent):
             q_target = reward
         self.q_table.loc[state, action] += self.config.lr * (q_target - q_predict)
 
-    def episode_learn(self, step_render=False):
+    def episode_learn(self, i_episode, step_render=False):
         state = self.config.env.reset()
 
         for t in count():

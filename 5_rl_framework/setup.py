@@ -7,7 +7,7 @@ def read(fname):
 
 
 setup(
-    name="rl_m19", version="0.1.0", author="Shuang Gao", author_email="gaoshuang.dalian@gmail.com",
+    name="rl_m19", version="0.2.0", author="Shuang Gao", author_email="gaoshuang.dalian@gmail.com",
     description=('A Reinforcement Learning Framework for training.'),
     license="MIT", keywords=['Reinforcement Learning, Cart Pole, Quant, Training Framework'],
     url='https://github.com/minister19/RL_pytorch', packages=find_packages(),

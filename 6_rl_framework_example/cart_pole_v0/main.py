@@ -16,17 +16,6 @@ config.test_env = CartPole_v0(config.device)
 config.state_dim = config.env.state_dim
 config.action_dim = config.env.action_dim
 
-config.episode_lifespan = 10**3
-config.episodes = 1000
-# config.eps_fn = lambda s: 0.9
-config.eps_fn = lambda s: 0.05 + (0.9 - 0.05) * math.exp(-1. * s / 1000)
-
-config.replay_size = 10**5
-config.batch_size = 10**2
-config.gamma = 0.999
-config.lr = 0.001
-config.target_update_freq = 10
-
 config.policy_net = FullyConnected(config.state_dim,
                                    config.action_dim,
                                    hidden_sizes=(config.state_dim*4, config.state_dim*4, ),

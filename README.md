@@ -2,7 +2,19 @@
 
 This repo records Shuang Gao's AI learning progress.
 
-### Ask for leaves.
+# \_env Setup
+
+```
+pip install -U autopep8
+pip install numpy
+pip install gym
+pip3 install torch torchvision torchaudio
+pip install matplotlib
+pip install pyglet
+pip install -e .\5_rl_framework\.
+```
+
+# Ask for leaves.
 
 2021-04-29 Shawn: ask for leave. OT in ABB, cannot get home.
 2021-05-02 Shawn: ask for leave. Travelling to Tangyin.
@@ -31,3 +43,4 @@ This repo records Shuang Gao's AI learning progress.
    batch size - memory capacity
    eps decay - data trained
    batch size - data trained
+9. 研究是否可以用二进制替代 action space，这样最后一层网络尺寸缩小为 log(a_dim).比如 00，01，10，11 分别代表四种 action。
