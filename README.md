@@ -46,3 +46,4 @@ pip install -e .\5_rl_framework\.
    batch size - data trained
 10. 研究是否可以用二进制替代 action space，这样最后一层网络尺寸缩小为 log(a_dim).比如 00，01，10，11 分别代表四种 action。
 11. 设计比较器，可以分析 input 与所需 output 的相关性（协方差），进而剥夺 input，这样网络仍然是全连接，不需要 dropout。
+12. 研究 multiple activation functions，一个 Relu，一个 Step（输出 bool），一个导数，一个幂指数
